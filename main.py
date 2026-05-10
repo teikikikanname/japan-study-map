@@ -1,5 +1,9 @@
 import streamlit as st
-# Google Analytics 設置コード
+import pandas as pd
+import folium
+from streamlit_folium import st_folium
+
+# --- Google Analytics 連携（サチコ対策） ---
 st.markdown("""
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W9WDMKSB7S"></script>
     <script>
@@ -9,9 +13,8 @@ st.markdown("""
       gtag('config', 'G-W9WDMKSB7S');
     </script>
     """, unsafe_allow_html=True)
-import pandas as pd
-import folium
-from streamlit_folium import st_folium
+
+# (以下、以前の完全版コードが続きます...)
 
 # ==========================================
 # 1. ページ設定 & SEO・Google確認タグ
