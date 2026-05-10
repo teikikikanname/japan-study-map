@@ -1,4 +1,14 @@
 import streamlit as st
+# Google Analytics 設置コード
+st.markdown("""
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W9WDMKSB7S"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-W9WDMKSB7S');
+    </script>
+    """, unsafe_allow_html=True)
 import pandas as pd
 import folium
 from streamlit_folium import st_folium
