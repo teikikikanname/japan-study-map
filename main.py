@@ -4,8 +4,29 @@ import folium
 from streamlit_folium import st_folium
 
 # ページ設定
-st.set_page_config(page_title="駅勉ガイド | 神奈川版", page_icon="📖", layout="wide")
-
+st.set_page_config(
+    page_title="駅勉ガイド | 湘南新宿ライン沿線の無料勉強場所検索（神奈川版）",
+    page_icon="📖",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    # 検索エンジンが読み取る説明文を追加
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': """
+        ### 駅勉ガイド 神奈川版
+        湘南新宿ライン（小田原〜武蔵小杉）の定期券範囲内で、
+        無料で勉強できる図書館や施設を検索できる専門サイトです。
+        「駅から徒歩◯分」など実用的な情報を掲載。
+        """
+    }
+)
+# Google Search Console 確認用タグ（これを追加！）
+st.markdown("""
+    <head>
+        <meta name="google-site-verification" content="ROSJqr15YgcHGn7S5kq-OQJI0EGH47vCPUk9OnKAJXY" />
+    </head>
+    """, unsafe_allow_html=True)
 # デザインCSS
 st.markdown("""
     <style>
