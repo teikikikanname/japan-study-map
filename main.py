@@ -9,36 +9,32 @@ st.set_page_config(
     page_icon="📖",
     layout="wide",
     initial_sidebar_state="expanded",
-    # 検索エンジンが読み取る説明文を追加
     menu_items={
-        'Get Help': None,
-        'Report a bug': None,
         'About': """
         ### 駅勉ガイド 神奈川版
         湘南新宿ライン（小田原〜武蔵小杉）の定期券範囲内で、
         無料で勉強できる図書館や施設を検索できる専門サイトです。
-        「駅から徒歩◯分」など実用的な情報を掲載。
         """
     }
 )
-# Google Search Console 確認用タグ（これを追加！）
+
+# Google Search Console 確認用タグ
 st.markdown("""
     <head>
         <meta name="google-site-verification" content="ROSJqr15YgcHGn7S5kq-OQJI0EGH47vCPUk9OnKAJXY" />
     </head>
     """, unsafe_allow_html=True)
+
 # デザインCSS
 st.markdown("""
     <style>
     .stApp { background-color: white; }
-    h1 { color: #003399; border-bottom: 3px solid #003399; margin-bottom: 20px; }
-    h2 { color: #003399; }
+    h1 { color: #003399; border-bottom: 3px solid #003399; }
     .stButton>button { width: 100%; height: 80px; background-color: #003399; color: white; border-radius: 12px; font-weight: bold; font-size: 18px; }
-    .back-button>button { height: 40px !important; background-color: #666 !important; }
     </style>
     """, unsafe_allow_html=True)
 
-# 1. データベース（共通）
+# データベース
 stations = ["大宮", "浦和", "赤羽", "池袋", "新宿", "渋谷", "恵比寿", "大崎", "西大井", "武蔵小杉", "新川崎", "横浜", "保土ケ谷", "東戸塚", "戸塚", "大船", "北鎌倉", "鎌倉", "逗子", "藤沢", "辻堂", "茅ヶ崎", "平塚", "大磯", "二宮", "国府津", "鴨宮", "小田原"]
 
 spots_data = [
@@ -61,84 +57,51 @@ spots_data = [
 ]
 df_spots = pd.DataFrame(spots_data)
 
-# --- 状態管理の初期化 ---
 if "page" not in st.session_state:
-    st.session_state.page = "top"  # ページ状態：top, range, station
+    st.session_state.page = "top"
 
-# --- TOPページ ---
 if st.session_state.page == "top":
     st.title("📖 駅勉ガイド 神奈川版")
     st.write("どのように勉強スポットを探しますか？")
-    
-    st.markdown("<br>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
-    
     with col1:
         if st.button("🚃 定期券の範囲から探す"):
-            st.session_state.page = "range"
-            st.rerun()
-            
+            st.session_state.page = "range"; st.rerun()
     with col2:
         if st.button("🔍 特定の駅から探す"):
-            st.session_state.page = "station"
-            st.rerun()
+            st.session_state.page = "station"; st.rerun()
 
-# --- 定期券検索ページ ---
 elif st.session_state.page == "range":
-    st.sidebar.markdown('<div class="back-button">', unsafe_allow_html=True)
     if st.sidebar.button("← 戻る"):
-        st.session_state.page = "top"
-        st.rerun()
-    st.sidebar.markdown('</div>', unsafe_allow_html=True)
-
+        st.session_state.page = "top"; st.rerun()
     st.title("🚃 定期券の範囲で探す")
-    col1, col2 = st.columns(2)
-    with col1:
-        start_st = st.selectbox("開始駅", stations, index=27) # 小田原
-    with col2:
-        end_st = st.selectbox("終了駅", stations, index=9)   # 武蔵小杉
-    
+    start_st = st.selectbox("開始駅", stations, index=27)
+    end_st = st.selectbox("終了駅", stations, index=9)
     idx1, idx2 = stations.index(start_st), stations.index(end_st)
     valid_range = stations[min(idx1, idx2) : max(idx1, idx2) + 1]
     target_spots = df_spots[df_spots['station'].isin(valid_range)]
-    
-    # 地図とリスト表示（共通処理を関数化しても良いですが、ここではシンプルに記述）
     if not target_spots.empty:
         m = folium.Map(location=[target_spots['lat'].mean(), target_spots['lon'].mean()], zoom_start=11)
         for _, spot in target_spots.iterrows():
-            folium.Marker([spot['lat'], spot['lon']], popup=f"{spot['name']}({spot['access']})", icon=folium.Icon(color='blue')).add_to(m)
+            folium.Marker([spot['lat'], spot['lon']], popup=f"{spot['name']}({spot['access']})").add_to(m)
         st_folium(m, width=None, height=400, use_container_width=True)
         for _, spot in target_spots.iterrows():
             with st.expander(f"【{spot['station']}駅】{spot['name']} ({spot['access']})"):
                 st.write(spot['desc'])
-    else:
-        st.info("この区間に登録スポットはありません。")
 
-# --- 駅名検索ページ ---
 elif st.session_state.page == "station":
-    st.sidebar.markdown('<div class="back-button">', unsafe_allow_html=True)
     if st.sidebar.button("← 戻る"):
-        st.session_state.page = "top"
-        st.rerun()
-    st.sidebar.markdown('</div>', unsafe_allow_html=True)
-
+        st.session_state.page = "top"; st.rerun()
     st.title("🔍 特定の駅から探す")
-    search_st = st.selectbox("駅名を選択してください", stations, index=9) # 武蔵小杉
-    
-    # その駅のスポットを抽出
+    search_st = st.selectbox("駅名を選択してください", stations, index=9)
     target_spots = df_spots[df_spots['station'] == search_st]
-    
     if not target_spots.empty:
-        st.write(f"### {search_st}駅周辺のスポット")
         m = folium.Map(location=[target_spots['lat'].iloc[0], target_spots['lon'].iloc[0]], zoom_start=14)
         for _, spot in target_spots.iterrows():
-            folium.Marker([spot['lat'], spot['lon']], popup=f"{spot['name']}({spot['access']})", icon=folium.Icon(color='green')).add_to(m)
+            folium.Marker([spot['lat'], spot['lon']], popup=f"{spot['name']}({spot['access']})").add_to(m)
         st_folium(m, width=None, height=400, use_container_width=True)
-        
         for _, spot in target_spots.iterrows():
             with st.expander(f"📌 {spot['name']} ({spot['access']})"):
                 st.write(spot['desc'])
-                st.write(f"🔗 [Googleマップで開く](https://www.google.com/maps/search/?api=1&query={spot['lat']},{spot['lon']})")
     else:
-        st.warning(f"現在、{search_st}駅の徒歩圏内に登録されている無料スポットはありません。")
-        st.info("💡 湘南新宿ラインの隣の駅もチェックしてみてください。")
+        st.warning(f"現在、{search_st}駅に登録スポットはありません。")
