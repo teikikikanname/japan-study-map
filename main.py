@@ -222,53 +222,80 @@ ALL_LINES = sorted({line for info in STATION_DATA.values() for line in info["lin
 
 
 # =========================================================
-# 3. 店舗情報の自動補完(公式サイトURL・営業時間・定休日)
-#    チェーン店は公式サイトのトップ/店舗一覧ページへ、個人店は店舗名+最寄り駅で
-#    検索できるリンクを自動生成する。営業時間・定休日は目安であり、
-#    最新情報は必ずリンク先で確認することを前提とした値を設定している。
+# 3. 店舗情報の自動補完(遷移先URL・営業時間・定休日)
+#
+#    【リンク方針】
+#    図書館(10館)は件数が少ないため、個別に公式サイトのURLを調査済み(実在確認済み)。
+#    カフェは161件と非常に多く、1店舗ずつ公式サイトを特定するのは非現実的なため、
+#    Googleマップの検索リンク(店舗名+最寄り駅)に統一する。
+#    ブランドの公式サイト「トップページ」等にリンクすると、必ずしもその特定の店舗の
+#    ページに直接たどり着けない(店舗一覧ページで再検索が必要/URLが存在しない等)ため、
+#    Googleマップ形式であれば実店舗の位置情報にほぼ確実に直接たどり着ける。
+#
+#    営業時間・定休日はブランド/施設ごとの目安値。最新情報は必ずリンク先で確認すること。
 # =========================================================
-CHAIN_INFO: dict[str, tuple[str, str, str]] = {
-    # ブランド名(部分一致): (公式サイト, 営業時間の目安, 定休日の目安)
-    "スターバックス": ("https://www.starbucks.co.jp/store/", "7:00〜22:00(店舗により異なる)", "施設休館日に準ずる(基本無休)"),
-    "タリーズ": ("https://www.tullys.co.jp/store/", "7:00〜22:00(店舗により異なる)", "施設休館日に準ずる(基本無休)"),
-    "エクセルシオール": ("https://www.doutor.co.jp/excelsior/shop/", "7:00〜22:00(店舗により異なる)", "無休(施設休館日を除く)"),
-    "ドトール": ("https://www.doutor.co.jp/dcs/shop/", "7:00〜21:00(店舗により異なる)", "無休(施設休館日を除く)"),
-    "カフェ・ド・クリエ": ("https://www.pokkacreate.co.jp/brand/cafedecrie/", "7:00〜21:00(店舗により異なる)", "無休(施設休館日を除く)"),
-    "Café de Crié": ("https://www.pokkacreate.co.jp/brand/cafedecrie/", "7:00〜21:00(店舗により異なる)", "無休(施設休館日を除く)"),
-    "PRONTO": ("https://www.pronto.co.jp/shop/", "8:00〜23:00(Barタイムあり・店舗差大)", "無休(施設休館日を除く)"),
-    "プロント": ("https://www.pronto.co.jp/shop/", "8:00〜23:00(Barタイムあり・店舗差大)", "無休(施設休館日を除く)"),
-    "珈琲館": ("https://www.kohikan.co.jp/shop/", "8:00〜20:00(店舗により異なる)", "施設休館日に準ずる"),
-    "星乃珈琲店": ("https://www.hoshinocoffee.com/shop/", "8:00〜22:00(店舗により異なる)", "施設休館日に準ずる"),
-    "ブルーボトル": ("https://bluebottlecoffee.jp/cafes", "8:00〜19:00(店舗により異なる)", "無休"),
-    "サンマルク": ("https://www.saint-marc-hd.com/sanmarc/shop/", "7:00〜22:00(店舗により異なる)", "施設休館日に準ずる"),
-    "コメダ珈琲": ("https://www.komeda.co.jp/shop/", "7:00〜19:00(店舗差・24時間営業店あり)", "無休(施設休館日を除く)"),
-    "ゴンチャ": ("https://www.gongcha.co.jp/shop/", "10:00〜21:00(店舗により異なる)", "施設休館日に準ずる"),
-    "猿田彦珈琲": ("https://sarutahiko.co/pages/shoplist", "8:00〜21:00(店舗により異なる)", "施設休館日に準ずる"),
-    "UNI COFFEE ROASTERY": ("https://unicoffeeroastery.com/pages/shop", "9:00〜20:00(店舗により異なる)", "不定休"),
-    "24/7 coffee": ("https://247coffee.jp/", "8:00〜19:00(店舗により異なる)", "不定休"),
-    "THE ROYAL CAFE": ("https://www.royal-holdings.co.jp/brand/theroyalcafe/", "8:00〜22:00(店舗により異なる)", "施設休館日に準ずる"),
-    "GINZA WEST": ("https://ginza-west.co.jp/", "11:00〜21:00(店舗により異なる)", "不定休"),
-    "カフェ・ベローチェ": ("https://www.veloce.co.jp/shop/", "7:00〜22:00(店舗により異なる)", "無休(施設休館日を除く)"),
-    "モリバコーヒー": ("https://moriba-coffee.co.jp/", "7:00〜21:00(店舗により異なる)", "施設休館日に準ずる"),
-    "倉式珈琲店": ("https://www.pokkacreate.co.jp/brand/kurashiki/", "7:00〜22:00(店舗により異なる)", "無休(施設休館日を除く)"),
-    "むさしの森珈琲": ("https://musashinomori-coffee.jp/", "7:00〜22:00(店舗により異なる)", "無休(施設休館日を除く)"),
-    "VANILLA BEANS": ("https://www.vanillabeans.jp/", "11:00〜19:00(店舗により異なる)", "不定休"),
+GOOGLE_MAPS_SEARCH_BASE = "https://www.google.com/maps/search/?api=1&query="
+
+
+def build_maps_url(name: str, station: str) -> str:
+    """店舗名+最寄り駅でGoogleマップを検索するURLを生成する(実在する店舗ページへ直接誘導)。"""
+    query = quote(f"{name} 横浜 {station}駅")
+    return f"{GOOGLE_MAPS_SEARCH_BASE}{query}"
+
+
+CHAIN_HOURS: dict[str, tuple[str, str]] = {
+    # ブランド名(部分一致): (営業時間の目安, 定休日の目安)
+    "スターバックス": ("7:00〜22:00(店舗により異なる)", "施設休館日に準ずる(基本無休)"),
+    "タリーズ": ("7:00〜22:00(店舗により異なる)", "施設休館日に準ずる(基本無休)"),
+    "エクセルシオール": ("7:00〜22:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "ドトール": ("7:00〜21:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "カフェ・ド・クリエ": ("7:00〜21:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "Café de Crié": ("7:00〜21:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "PRONTO": ("8:00〜23:00(Barタイムあり・店舗差大)", "無休(施設休館日を除く)"),
+    "プロント": ("8:00〜23:00(Barタイムあり・店舗差大)", "無休(施設休館日を除く)"),
+    "珈琲館": ("8:00〜20:00(店舗により異なる)", "施設休館日に準ずる"),
+    "星乃珈琲店": ("8:00〜22:00(店舗により異なる)", "施設休館日に準ずる"),
+    "ブルーボトル": ("8:00〜19:00(店舗により異なる)", "無休"),
+    "サンマルク": ("7:00〜22:00(店舗により異なる)", "施設休館日に準ずる"),
+    "コメダ珈琲": ("7:00〜19:00(店舗差・24時間営業店あり)", "無休(施設休館日を除く)"),
+    "ゴンチャ": ("10:00〜21:00(店舗により異なる)", "施設休館日に準ずる"),
+    "猿田彦珈琲": ("8:00〜21:00(店舗により異なる)", "施設休館日に準ずる"),
+    "UNI COFFEE ROASTERY": ("9:00〜20:00(店舗により異なる)", "不定休"),
+    "24/7 coffee": ("8:00〜19:00(店舗により異なる)", "不定休"),
+    "THE ROYAL CAFE": ("8:00〜22:00(店舗により異なる)", "施設休館日に準ずる"),
+    "GINZA WEST": ("11:00〜21:00(店舗により異なる)", "不定休"),
+    "カフェ・ベローチェ": ("7:00〜22:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "モリバコーヒー": ("7:00〜21:00(店舗により異なる)", "施設休館日に準ずる"),
+    "倉式珈琲店": ("7:00〜22:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "むさしの森珈琲": ("7:00〜22:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "VANILLA BEANS": ("11:00〜19:00(店舗により異なる)", "不定休"),
 }
 
-# 図書館は運営元(県立 / 横浜市立)ごとに公式サイトと基本の休館日を設定
-LIBRARY_INFO: dict[str, tuple[str, str, str]] = {
-    "県立図書館": ("https://www.klnet.pref.kanagawa.jp/", "9:00〜19:00(土日祝は17:00まで)", "月曜日・毎月第2木曜日・特別整理期間"),
+# 図書館は個別に公式サイトURLを調査済み(実在確認済み)
+LIBRARY_URL: dict[str, str] = {
+    "神奈川県立図書館": "https://www.klnet.pref.kanagawa.jp/yokohama/",
+    "横浜市中央図書館": "https://www.city.yokohama.lg.jp/kurashi/kyodo-manabi/library/tshokan/central/",
+    "横浜市中図書館": "https://www.city.yokohama.lg.jp/kurashi/kyodo-manabi/library/tshokan/naka/",
+    "横浜市戸塚図書館": "https://www.city.yokohama.lg.jp/kurashi/kyodo-manabi/library/tshokan/totsuka/",
+    "横浜市港北図書館": "https://www.city.yokohama.lg.jp/kurashi/kyodo-manabi/library/tshokan/kohoku/",
+    "横浜市都筑図書館": "https://www.city.yokohama.lg.jp/kurashi/kyodo-manabi/library/tshokan/tsuzuki/",
+    "横浜市鶴見図書館": "https://www.city.yokohama.lg.jp/kurashi/kyodo-manabi/library/tshokan/tsurumi/",
+    "横浜市神奈川図書館": "https://www.city.yokohama.lg.jp/kurashi/kyodo-manabi/library/tshokan/kanagawa/",
+    "横浜市保土ケ谷図書館": "https://www.city.yokohama.lg.jp/kurashi/kyodo-manabi/library/tshokan/hodogaya/",
+    "横浜市旭図書館": "https://www.city.yokohama.lg.jp/kurashi/kyodo-manabi/library/tshokan/asahi/",
 }
-LIBRARY_INFO_DEFAULT = (
-    "https://www.city.yokohama.lg.jp/kurashi/manabi-sports/toshokan/",
+LIBRARY_HOURS: dict[str, tuple[str, str]] = {
+    "神奈川県立図書館": ("9:00〜19:00(土日祝は17:00まで)", "月曜日・毎月第2木曜日・特別整理期間"),
+}
+LIBRARY_HOURS_DEFAULT = (
     "9:00〜19:00(館により異なる)",
     "月曜日(祝日の場合は翌平日)・毎月第2木曜日・特別整理期間",
 )
 
 
-def _lookup_chain(name: str) -> tuple[str, str, str] | None:
-    """店舗名からチェーン情報(URL・営業時間・定休日)を探す。該当なしなら None。"""
-    for brand, info in CHAIN_INFO.items():
+def _lookup_chain_hours(name: str) -> tuple[str, str] | None:
+    """店舗名からチェーンの営業時間・定休日を探す。該当なしなら None。"""
+    for brand, info in CHAIN_HOURS.items():
         if brand in name:
             return info
     return None
@@ -277,31 +304,29 @@ def _lookup_chain(name: str) -> tuple[str, str, str] | None:
 def enrich_spot(spot: dict) -> dict:
     """
     1件分のスポット情報に、以下の3項目を自動付与する。
-        - url   : 店舗名クリック時の遷移先(公式サイト、無ければ検索結果)
+        - url   : 店舗名クリック時の遷移先
         - hours : 営業時間(空いている時間)の目安
         - closed: 定休日の目安
 
-    ※ チェーン店以外・図書館以外は個別の公式サイトまでは特定していないため、
-      店舗名+最寄り駅での検索リンクと、一般的な目安時間を設定している。
-      正確な情報は必ずリンク先の公式情報で確認すること。
+    図書館 → 個別に確認済みの公式サイトURL。
+    カフェ → Googleマップの検索リンク(店舗名+最寄り駅)。チェーン店であっても
+             公式サイトのトップページ等ではなく地図リンクにすることで、
+             ブランド共通ページに飛んでしまう/URLが存在しない問題を避け、
+             実際の店舗の位置に直接たどり着けるようにしている。
     """
     name = spot["name"]
 
     if spot["category"] == "図書館":
-        if "県立図書館" in name:
-            url, hours, closed = LIBRARY_INFO["県立図書館"]
-        else:
-            url, hours, closed = LIBRARY_INFO_DEFAULT
+        url = LIBRARY_URL.get(name) or build_maps_url(name, spot["station"])
+        hours, closed = LIBRARY_HOURS.get(name, LIBRARY_HOURS_DEFAULT)
     else:
-        chain = _lookup_chain(name)
-        if chain:
-            url, hours, closed = chain
+        url = build_maps_url(name, spot["station"])
+        chain_hours = _lookup_chain_hours(name)
+        if chain_hours:
+            hours, closed = chain_hours
         else:
-            # 個人店・情報未特定チェーン: 店舗名+最寄り駅で検索できるリンクを生成
-            query = quote(f"{name} {spot['station']}")
-            url = f"https://www.google.com/search?q={query}"
             hours = "10:00〜19:00頃(店舗により異なる・要確認)"
-            closed = "不定休(要公式情報確認)"
+            closed = "不定休(要確認)"
 
     spot["url"] = url
     spot["hours"] = hours
@@ -610,7 +635,7 @@ def render_spot_table(filtered_df: pd.DataFrame) -> str:
     """検索結果一覧のHTMLテーブルを生成する。"""
     header = (
         "<table class='spot-table'><thead><tr>"
-        "<th style='width: 24%;'>施設名</th>"
+        "<th style='width: 24%;'>施設名(タップで地図/公式サイトへ)</th>"
         "<th style='width: 16%;'>最寄り駅・アクセス</th>"
         "<th style='width: 18%;'>営業時間・定休日</th>"
         "<th style='width: 16%;'>座席・ルール</th>"
@@ -738,7 +763,8 @@ def render_footer() -> None:
         """
         <div style='text-align: center; font-size: 11px; color: #94a3b8; padding-top: 5px;'>
             駅勉ガイド 横浜広域版 | 当サイトは公開データを基にしたデータベースです。<br>
-            店舗名リンク先・営業時間・定休日は目安です。最新情報は必ず各施設の公式サイトでご確認ください。
+            図書館は公式サイトへ、カフェはGoogleマップへ遷移します。営業時間・定休日は目安です。<br>
+            最新情報は必ずリンク先(公式サイト／Googleマップ)でご確認ください。
         </div>
         """,
         unsafe_allow_html=True,
