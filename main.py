@@ -19,9 +19,6 @@ st.markdown("""
     .main .block-container { padding-top: 2.0rem; padding-bottom: 2.0rem; background-color: #f8fafc; }
     h1, h2, h3 { color: #0f172a; font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif; font-weight: 700; }
     
-    /* 検索コンテナの装飾（すっきりとした一体感） */
-    .search-box { background-color: #ffffff; padding: 20px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
-    
     /* 東京図書館風のすっきりとしたテキストリンク・テーブル風デザイン */
     .spot-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background-color: #ffffff; border-radius: 4px; overflow: hidden; border: 1px solid #e2e8f0; }
     .spot-table th { background-color: #1e3a8a; color: white; padding: 12px 14px; font-size: 13px; text-align: left; font-weight: 600; letter-spacing: 0.05em; }
@@ -47,7 +44,7 @@ STATION_DATA = {
     "横浜": {"coords": (35.4657, 139.6223), "lines": ["JR東海道線", "JR根岸線", "東急東横線", "相鉄本線", "京急本線", "横浜市営地下鉄ブルーライン"]},
     "新横浜": {"coords": (35.5074, 139.6175), "lines": ["JR横浜線", "東海道新幹線", "相鉄・東急直通線", "横浜市営地下鉄ブルーライン"]},
     "戸塚": {"coords": (35.4008, 139.5341), "lines": ["JR東海道線", "JR横須賀線", "横浜市営地下鉄ブルーライン"]},
-    "東戸塚": {"coords": (35.4181, 139.5474), "lines": ["JR横須賀線"]}, # タイポを修正
+    "東戸塚": {"coords": (35.4181, 139.5474), "lines": ["JR横須賀線"]}, # 簡体字タイポを修正
     "保土ケ谷": {"coords": (35.4468, 139.5936), "lines": ["JR横須賀線"]},
     "大船": {"coords": (35.3555, 139.5307), "lines": ["JR東海道線", "JR横須賀線", "JR根岸線", "湘南モノレール"]},
     "桜木町": {"coords": (35.4503, 139.6313), "lines": ["JR根岸線", "横浜市営地下鉄ブルーライン"]},
@@ -118,7 +115,7 @@ STATION_DATA = {
 ALL_LINES = sorted(list(set([line for st_info in STATION_DATA.values() for line in st_info["lines"]])))
 
 # =========================================================
-# 勉強スポットデータベース（全124件より抜粋）
+# 勉強スポットデータベース
 # =========================================================
 SPOTS_DATA = [
     {"name": "神奈川県立図書館", "station": "桜木町", "line": "JR根岸線", "lat": 35.4542, "lon": 139.6275, "category": "図書館", "wifi": True, "power": True, "seats": "約300席", "rule": "PC・電卓使用全席可（サイレントエリア除く）", "access": "桜木町駅 徒歩10分", "desc": "新館は全席コンセント完備。予約システムがあり確実。非常に綺麗で静寂。"},
@@ -144,7 +141,7 @@ st.markdown("<h2 style='margin-bottom:0px; letter-spacing:-0.02em;'>📖 駅勉�
 st.markdown("<p style='font-size:12px; color:#64748b; margin-top:4px;'>通勤・通学定期ルートから最適な自習空間を見つける、実用本位のデータベース</p>", unsafe_allow_html=True)
 st.markdown("---")
 
-# 検索枠をすっきり配置
+# 検索枠の配置
 search_mode = st.radio("【検索軸の選択】", ["鉄道路線から探す（沿線指定）", "特定の駅から探す（ピンポイント）"], horizontal=True)
 
 col_f1, col_f2 = st.columns([2, 2])
@@ -193,18 +190,8 @@ with col_main:
     st.markdown(f"<div class='line-header'>{display_title} ({len(filtered_df)}件該当)</div>", unsafe_allow_html=True)
     
     if not filtered_df.empty:
-        table_html = """
-        <table class='spot-table'>
-            <thead>
-                <tr>
-                    <th style='width: 18%;'>最寄り駅</th>
-                    <th style='width: 32%;'>施設名 / 設備</th>
-                    <th style='width: 20%;'>座席・ルール</th>
-                    <th style='width: 30%;'>特徴・詳細</th>
-                </tr>
-            </thead>
-            <tbody>
-        """
+        # インデントバグを完全に回避するため、HTMLコードブロック内の行頭余白を徹底排除
+        table_html = "<table class='spot-table'><thead><tr><th style='width: 18%;'>最寄り駅</th><th style='width: 32%;'>施設名 / 設備</th><th style='width: 20%;'>座席・ルール</th><th style='width: 30%;'>特徴・詳細</th></tr></thead><tbody>"
         
         for _, row in filtered_df.iterrows():
             w_tag = "<span class='tag-text-active'>🛜 Wi-Fi</span>" if row['wifi'] else "<span class='tag-text'>🛜 なし</span>"
@@ -213,28 +200,17 @@ with col_main:
             seats_text = row['seats'] if pd.notna(row.get('seats')) else "情報なし"
             rule_text = row['rule'] if pd.notna(row.get('rule')) else "特になし"
             
-            table_html += f"""
-                <tr>
-                    <td>
-                        <b>{row['station']}駅</b><br>
-                        <span style='font-size:11px; color:#64748b;'>{row['access']}</span>
-                    </td>
-                    <td>
-                        <strong style='font-size:14px; color:#1e3a8a;'>{row['name']}</strong><br>
-                        <span style='font-size:10px; color:#475569; background:#e2e8f0; padding:1px 4px; border-radius:2px; margin-right:5px; font-weight:600;'>{row['category']}</span>
-                        <div style='margin-top:6px;'>{w_tag}{p_tag}</div>
-                    </td>
-                    <td>
-                        <span style='color:#0f172a; font-weight:bold;'>{seats_text}</span><br>
-                        <span class='rule-alert'>⚠ {rule_text}</span>
-                    </td>
-                    <td>
-                        <div style='font-weight:400; color:#334155;'>{row['desc']}</div>
-                    </td>
-                </tr>
-            """
+            # 複数行のインデントによる誤記動を1行ずつの文字列結合（インデントなし）で安全に実装
+            table_html += f"<tr>" \
+                          f"<td><b>{row['station']}駅</b><br><span style='font-size:11px; color:#64748b;'>{row['access']}</span></td>" \
+                          f"<td><strong style='font-size:14px; color:#1e3a8a;'>{row['name']}</strong><br><span style='font-size:10px; color:#475569; background:#e2e8f0; padding:1px 4px; border-radius:2px; margin-right:5px; font-weight:600;'>{row['category']}</span><div style='margin-top:6px;'>{w_tag}{p_tag}</div></td>" \
+                          f"<td><span style='color:#0f172a; font-weight:bold;'>{seats_text}</span><br><span class='rule-alert'>⚠ {rule_text}</span></td>" \
+                          f"<td><div style='font-weight:400; color:#334155;'>{row['desc']}</div></td>" \
+                          f"</tr>"
         
-        table_html += """</tbody></table>"""
+        table_html += "</tbody></table>"
+        
+        # 安全に一括レンダリング
         st.markdown(table_html, unsafe_allow_html=True)
     else:
         st.warning("選択された条件に合致するスポットは現在登録されていません。条件を緩めてみてください。")
@@ -263,7 +239,7 @@ with col_map:
                 icon=folium.Icon(color=pin_color, icon="info-sign")
             ).add_to(m)
             
-    # keyにsearch_modeの文字列を含めることで、マップ表示の競合バグを回避
+    # 地図の一意性を保証するkeyを設定
     st_folium(m, width="100%", height=480, key=f"map_{search_mode}_{ref_station}")
 
 # =========================================================
