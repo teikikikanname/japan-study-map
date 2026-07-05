@@ -14,9 +14,10 @@ st.set_page_config(
 )
 
 # =========================================================
-# 駅の座標データ（新規追加の駅も含めて完全網羅）
+# 駅の座標データ（JR根岸線・東急東横線まで含めてさらに拡張！）
 # =========================================================
 STATION_COORDS = {
+    # ターミナル・既存主要駅
     "横浜":     (35.4657, 139.6223),
     "新横浜":   (35.5074, 139.6175),
     "戸塚":     (35.4008, 139.5341),
@@ -40,18 +41,70 @@ STATION_COORDS = {
     "日ノ出町": (35.4433, 139.6267),
     "山手":     (35.4269, 139.6466),
     "東神奈川": (35.4778, 139.6322),
-    "星川":     (35.4568, 130.6000),
+    "星川":     (35.4568, 139.6000),
     "馬車道":   (35.4491, 139.6361),
     "関内":     (35.4442, 139.6364),
     "日本大通り": (35.4475, 139.6425),
     "あざみ野": (35.5687, 139.5535),
     "新杉田":   (35.3868, 139.6198),
     "港南台":   (35.3752, 139.5668),
+
+    # 【相鉄線】
+    "西横浜":   (35.4542, 139.6105),
+    "天王町":   (35.4554, 139.6049),
+    "平沼橋":   (35.4616, 139.6159),
+    "三ツ境":   (35.4682, 139.5034),
+    "瀬谷":     (35.4705, 139.4795),
+    "緑園都市": (35.4382, 139.5242),
+    "弥生台":   (35.4293, 139.5101),
+    "いずみ野": (35.4187, 139.4952),
+    "いずみ中央": (35.4057, 139.4880),
+    "湘南台":   (35.3963, 139.4665),
+
+    # 【京急線】
+    "神奈川":   (35.4697, 139.6292),
+    "戸部":     (35.4578, 139.6206),
+    "黄金町":   (35.4418, 139.6219),
+    "南太田":   (35.4364, 139.6139),
+    "井土ヶ谷": (35.4338, 139.5989),
+    "弘明寺(京急)": (35.4243, 139.5982),
+    "屏風浦":   (35.3941, 139.6153),
+    "杉田":     (35.3811, 139.6201),
+    "京急富岡": (35.3672, 139.6302),
+    "能見台":   (35.3601, 139.6288),
+    "金沢八景": (35.3269, 139.6208),
+
+    # 【市営地下鉄ブルーライン】
+    "高島町":   (35.4593, 139.6223),
+    "伊勢佐木長者町": (35.4416, 139.6343),
+    "阪東橋":   (35.4373, 139.6277),
+    "吉野町":   (35.4337, 139.6218),
+    "蒔田":     (35.4272, 139.6139),
+    "弘明寺(地下鉄)": (35.4241, 139.6074),
+    "片倉町":   (35.4851, 139.6033),
+    "三ツ沢上町": (35.4746, 139.6053),
+    "三ツ沢下町": (35.4740, 139.6146),
+
+    # 【東急東横線・目黒線エリア拡張】
+    "東白楽":   (35.4828, 139.6295),
+    "白楽":     (35.4904, 139.6268),
+    "妙蓮寺":   (35.4988, 139.6318),
+    "大倉山":   (35.5215, 139.6300),
+    "綱島":     (35.5365, 139.6342),
+    "高田":     (35.5492, 139.6198),
+    "日吉本町": (35.5516, 139.6348),
+
+    # 【JR根岸線エリア拡張】
+    "石川町":   (35.4391, 139.6436),
+    "根岸":     (35.4158, 139.6353),
+    "磯子":     (35.4003, 139.6181),
+    "洋光台":   (35.3794, 139.5960),
+    "本郷台":   (35.3667, 139.5498),
 }
 STATIONS = sorted(list(STATION_COORDS.keys()))
 
 # =========================================================
-# 勉強スポットのデータベース（図書館 + カフェ全100店舗）
+# 勉強スポットのデータベース（全111件）
 # =========================================================
 SPOTS_DATA = [
     # --- 図書館データ ---
@@ -92,7 +145,7 @@ SPOTS_DATA = [
     {"name": "エクセルシオールカフェ 新横浜店", "station": "新横浜", "lat": 35.5085, "lon": 139.6170, "category": "カフェ", "wifi": True, "power": True, "access": "新横浜駅 徒歩3分", "desc": "席数が比較的多く、ゆったりと落ち着いて勉強に取り組めます。"},
     {"name": "PRONTO 新横浜店", "station": "新横浜", "lat": 35.5068, "lon": 139.6185, "category": "カフェ", "wifi": True, "power": True, "access": "新横浜駅 徒歩4分", "desc": "カウンター席に電源があり、PC作業がしやすいです。"},
     {"name": "珈琲館 新横浜店", "station": "新横浜", "lat": 35.5090, "lon": 139.6160, "category": "カフェ", "wifi": True, "power": True, "access": "新横浜駅 徒歩5分", "desc": "静かに集中したい日の自習におすすめ。"},
-    {"name": "スターバックス 新横浜駅店", "station": "新横浜", "lat": 35.5071, "lon": 139.6176, "category": "カフェ", "wifi": True, "power": True, "access": "新横浜駅構内", "desc": "ビジネスマンが多いため、作業に集中しやすい atmosphere です。"},
+    {"name": "スターバックス 新横浜駅店", "station": "新横浜", "lat": 35.5071, "lon": 139.6176, "category": "カフェ", "wifi": True, "power": True, "access": "新横浜駅構内", "desc": "ビジネスマンが多いため、作業に集中しやすい雰囲気です。"},
 
     # --- カフェデータ（26〜100: 新規追加分） ---
     {"name": "スターバックス CIAL桜木町店", "station": "桜木町", "lat": 35.4508, "lon": 139.6315, "category": "カフェ", "wifi": True, "power": True, "access": "桜木町駅直結 CIAL内", "desc": "駅直結で非常に便利。仕事や勉強の隙間時間に最適。"},
@@ -126,7 +179,7 @@ SPOTS_DATA = [
     {"name": "アフタヌーンティー・ティールーム MARK IS みなとみらい", "station": "みなとみらい", "lat": 35.4582, "lon": 139.6325, "category": "カフェ", "wifi": False, "power": False, "access": "みなとみらい駅直結", "desc": "紅茶専門店。気分転換の読書スペースに。"},
     {"name": "カフェ・ド・クリエ みなとみらい店", "station": "みなとみらい", "lat": 35.4568, "lon": 139.6308, "category": "カフェ", "wifi": True, "power": True, "access": "みなとみらい駅 徒歩4分", "desc": "ビジネス街側にあるため、比較的落ち着いて作業ができます。"},
     {"name": "スターバックス 横浜ワールドポーターズ店", "station": "みなとみらい", "lat": 35.4545, "lon": 139.6385, "category": "カフェ", "wifi": True, "power": False, "access": "みなとみらい駅 徒歩8分", "desc": "ワールドポーターズ内。平日は快適。"},
-    {"name": "レオニダスカフェ 横浜ワールドポーターズ店", "station": "みなとみらい", "lat": 35.4543, "lon": 139.6380, "category": "カフェ", "wifi": False, "power": False, "access": "みなとみらい駅 徒歩8分", "desc": "チョコレート専門店併設。甘いもので脳を活性化。"},
+    {"name": "レオニダスカフェ 横浜ワールドポーターズ店", "station": "みなとみらい", "lat": 35.4543, "lon": 139.6380, "category": "カフェ", "wifi": False, "power": False, "access": "みなとみらい駅 徒歩8分", "desc": "チョコレート専門店併設・甘いもので脳を活性化。"},
     {"name": "UNI COFFEE ROASTERY ハンマーヘッド店", "station": "みなとみらい", "lat": 35.4560, "lon": 139.6425, "category": "カフェ", "wifi": True, "power": True, "access": "みなとみらい駅 徒歩12分", "desc": "海が見える絶好のロケーション。Wi-Fiと電源完備。"},
     {"name": "Starbucks Coffee 横浜ハンマーヘッド店", "station": "みなとみらい", "lat": 35.4558, "lon": 139.6430, "category": "カフェ", "wifi": True, "power": True, "access": "みなとみらい駅 徒歩12分", "desc": "リラックスして勉強。"},
     {"name": "PIE HOLIC", "station": "みなとみらい", "lat": 35.4540, "lon": 139.6415, "category": "カフェ", "wifi": False, "power": False, "access": "みなとみらい駅 徒歩10分", "desc": "お洒落なカリフォルニアスタイル。オフの日の勉強に。"},
@@ -136,7 +189,7 @@ SPOTS_DATA = [
     {"name": "モトヤ パンケーキリストランテ", "station": "元町・中華街", "lat": 35.4405, "lon": 139.6520, "category": "カフェ", "wifi": False, "power": False, "access": "元町・中華街駅 徒歩4分", "desc": "読書などに適した大人の空間。"},
     {"name": "peace flower market & cafe", "station": "元町・中華街", "lat": 35.4395, "lon": 139.6500, "category": "カフェ", "wifi": False, "power": False, "access": "元町・中華街駅 徒歩5分", "desc": "お花屋さんに併設。リフレッシュしながらの学習に。"},
     {"name": "スターバックス 日吉店", "station": "日吉", "lat": 35.5535, "lon": 139.6465, "category": "カフェ", "wifi": True, "power": True, "access": "日吉駅西口 徒歩1分", "desc": "駅前の非常に便利なスタバ。学生が多く活気ある環境。"},
-    {"name": "ドトールコーヒー 日吉店", "station": "日吉", "lat": 35.5538, "lon": 139.6460, "category": "カフェ", "wifi": True, "power": False, "access": "日吉駅西口 徒歩2分", "desc": "サクッと暗記ものや復習をしたいときに最適。"},
+    {"name": "ドトールコーヒー 日吉店", "station": "日吉", "lat": 35.5538, "lon": 139.6460, "category": "カフェ", "wifi": True, "power": False, "access": "日吉駅西口 徒歩2分", "desc": "サクッと暗記ものや復クションをしたいときに最適。"},
     {"name": "タリーズコーヒー 慶應義塾大学日吉キャンパス店", "station": "日吉", "lat": 35.5545, "lon": 139.6480, "category": "カフェ", "wifi": True, "power": True, "access": "日吉駅 徒歩2分", "desc": "広々としており自習に最も適した環境の一つ。"},
     {"name": "珈琲館 日吉店", "station": "日吉", "lat": 35.5530, "lon": 139.6455, "category": "カフェ", "wifi": True, "power": True, "access": "日吉駅西口 徒歩3分", "desc": "静かに集中したい時におすすめ。"},
     {"name": "サンマルクカフェ 日吉店", "station": "日吉", "lat": 35.5532, "lon": 139.6462, "category": "カフェ", "wifi": True, "power": False, "access": "日吉駅西口 徒歩2分", "desc": "自分のペースでノート作業が進められます。"},
@@ -157,7 +210,7 @@ SPOTS_DATA = [
     {"name": "ドトールコーヒー 上大岡店", "station": "上大岡", "lat": 35.4082, "lon": 139.5958, "category": "カフェ", "wifi": True, "power": False, "access": "上大岡駅西口 徒歩2分", "desc": "隙間時間にテキストを広げるのに便利。"},
     {"name": "サンマルクカフェ 上大岡店", "station": "上大岡", "lat": 35.4080, "lon": 139.5962, "category": "カフェ", "wifi": True, "power": False, "access": "上大岡駅 徒歩3分", "desc": "一人で座れる席が多く、長時間の学習に。"},
     {"name": "スターバックス シァル鶴見店", "station": "鶴見", "lat": 35.5076, "lon": 139.6765, "category": "カフェ", "wifi": True, "power": True, "access": "鶴見駅直結 CIAL内", "desc": "駅ビル内で雨でも安心。電源席でPC作業も快適。"},
-    {"name": "ドトールコーヒー 鶴見東口店", "station": "鶴見", "lat": 35.5070, "lon": 139.6760, "category": "カフェ", "wifi": True, "power": False, "access": "鶴見駅東口 徒歩1分", "desc": "クイックなインプット学習に最適. "},
+    {"name": "ドトールコーヒー 鶴見東口店", "station": "鶴見", "lat": 35.5070, "lon": 139.6760, "category": "カフェ", "wifi": True, "power": False, "access": "鶴見駅東口 徒歩1分", "desc": "クイックなインプット学習に最適です。"},
     {"name": "タリーズコーヒー 鶴見店", "station": "鶴見", "lat": 35.5065, "lon": 139.6755, "category": "カフェ", "wifi": True, "power": True, "access": "鶴見駅西口 徒歩3分", "desc": "集中して作業ができる店舗。"},
     {"name": "スターバックス 東神奈川店", "station": "東神奈川", "lat": 35.4780, "lon": 139.6325, "category": "カフェ", "wifi": True, "power": True, "access": "東神奈川駅直結", "desc": "乗り換えの隙間にサクッと勉強をこなせます。"},
     {"name": "ドトールコーヒー 東神奈川店", "station": "東神奈川", "lat": 35.4775, "lon": 139.6320, "category": "カフェ", "wifi": True, "power": False, "access": "東神奈川駅 徒歩1分", "desc": "手軽にコーヒーを飲みながら復習を。"},
@@ -177,6 +230,12 @@ def load_spots() -> pd.DataFrame:
     return pd.DataFrame(SPOTS_DATA)
 
 df_spots = load_spots()
+
+# 横浜市外座標チェック
+invalid_spots = []
+for idx, row in df_spots.iterrows():
+    if not (35.20 <= row['lat'] <= 35.65) or not (139.40 <= row['lon'] <= 139.80):
+        invalid_spots.append(row['name'])
 
 CATEGORY_ICON = {
     "図書館": ("blue", "book"),
@@ -198,13 +257,18 @@ target_st = st.sidebar.selectbox(
     index=STATIONS.index("横浜"),
 )
 
-keyword = st.sidebar.text_input("スポット名で検索（任意）", placeholder="例：スタバ")
+selected_categories = st.sidebar.multiselect(
+    "表示するカテゴリ",
+    options=["図書館", "カフェ"],
+    default=["図書館", "カフェ"]
+)
 
+keyword = st.sidebar.text_input("スポット名で検索（任意）", placeholder="例：スタバ")
 wifi_only = st.sidebar.checkbox("Wi-Fiありのみ表示")
 power_only = st.sidebar.checkbox("電源ありのみ表示")
 
 st.sidebar.markdown("---")
-st.sidebar.caption(f"登録スポット数：全{len(df_spots)}件（{len(STATIONS)}駅中）")
+st.sidebar.caption(f"登録駅数：{len(STATIONS)}駅 / スポット数：全{len(df_spots)}件")
 
 # =========================================================
 # メイン画面
@@ -213,8 +277,16 @@ st.title("📖 駅勉ガイド 横浜広域版")
 st.write("各社の乗り換え駅に対応！定期券の範囲に合わせて図書館やカフェをピンポイントで探せます。")
 st.markdown("---")
 
+if invalid_spots:
+    st.warning(f"⚠️ 登録座標が横浜市の想定範囲外を指しているスポットがあります: {', '.join(invalid_spots)}")
+
 # --- フィルター処理 ---
 filtered_spots = df_spots[df_spots["station"] == target_st].copy()
+
+if selected_categories:
+    filtered_spots = filtered_spots[filtered_spots["category"].isin(selected_categories)]
+else:
+    filtered_spots = pd.DataFrame(columns=df_spots.columns)
 
 if keyword:
     filtered_spots = filtered_spots[filtered_spots["name"].str.contains(keyword, case=False, na=False)]
