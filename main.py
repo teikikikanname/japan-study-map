@@ -1,10 +1,27 @@
-import streamlit as st
-import pandas as pd
+"""
+駅勉ガイド 横浜広域版
+======================
+横浜エリアの沿線・駅ごとに、勉強や作業に使いやすい図書館・カフェを
+検索できる Streamlit アプリ。
+
+主な機能
+    - 路線 or 駅を指定してのスポット検索
+    - Wi-Fi / 電源の有無での絞り込み
+    - 店舗名から公式サイト(チェーン店)または検索結果(個人店)へのリンク
+    - 席数・アクセス(最寄り駅からの時間)・営業時間・定休日・概要の一覧表示
+    - 地図上でのスポット確認
+"""
+
+from urllib.parse import quote
+
 import folium
+import pandas as pd
+import streamlit as st
 from streamlit_folium import st_folium
 
+
 # =========================================================
-# ページ全体の基本設定
+# 1. ページ全体の基本設定
 # =========================================================
 st.set_page_config(
     page_title="駅勉ガイド 横浜広域版 | 沿線・駅別学習スポット検索",
@@ -12,24 +29,122 @@ st.set_page_config(
     layout="wide",
 )
 
-# 【デザイン設定】
-st.markdown("""
-    <style>
-    .main .block-container { padding-top: 2.0rem; padding-bottom: 2.0rem; background-color: #f8fafc; }
-    h1, h2, h3 { color: #0f172a; font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif; font-weight: 700; }
-    .spot-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; background-color: #ffffff; border-radius: 4px; overflow: hidden; border: 1px solid #e2e8f0; }
-    .spot-table th { background-color: #1e3a8a; color: white; padding: 12px 14px; font-size: 13px; text-align: left; font-weight: 600; letter-spacing: 0.05em; }
-    .spot-table td { padding: 14px 14px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #334155; vertical-align: top; line-height: 1.5; }
-    .spot-table tr:hover { background-color: #f1f5f9; }
-    .line-header { background-color: #eff6ff; padding: 10px 14px; border-left: 4px solid #1e3a8a; border-right: 1px solid #bfdbfe; border-top: 1px solid #bfdbfe; border-bottom: 1px solid #bfdbfe; font-weight: bold; font-size: 14px; color: #1e3a8a; margin-top: 10px; margin-bottom: 10px; border-radius: 0 4px 4px 0; }
-    .tag-text { font-size: 11px; font-weight: 600; color: #64748b; background-color: #f1f5f9; padding: 3px 6px; border-radius: 3px; margin-right: 4px; border: 1px solid #cbd5e1; display: inline-block; }
-    .tag-text-active { font-size: 11px; font-weight: 600; color: #1e3a8a; background-color: #e0f2fe; padding: 3px 6px; border-radius: 3px; margin-right: 4px; border: 1px solid #bae6fd; display: inline-block; }
-    .rule-alert { font-size: 11px; color: #b91c1c; font-weight: 500; background-color: #fef2f2; padding: 2px 6px; border-radius: 3px; border: 1px solid #fee2e2; display: inline-block; margin-top: 4px; }
-    </style>
-""", unsafe_allow_html=True)
+
+def load_css() -> None:
+    """画面全体のスタイル(配色・表・タグなど)を読み込む。"""
+    st.markdown(
+        """
+        <style>
+        .main .block-container {
+            padding-top: 2.0rem;
+            padding-bottom: 2.0rem;
+            background-color: #f8fafc;
+        }
+        h1, h2, h3 {
+            color: #0f172a;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
+            font-weight: 700;
+        }
+        .spot-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        .spot-table th {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 12px 14px;
+            font-size: 13px;
+            text-align: left;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+        .spot-table td {
+            padding: 14px 14px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
+            color: #334155;
+            vertical-align: top;
+            line-height: 1.5;
+        }
+        .spot-table tr:hover {
+            background-color: #f1f5f9;
+        }
+        .line-header {
+            background-color: #eff6ff;
+            padding: 10px 14px;
+            border-left: 4px solid #1e3a8a;
+            border-right: 1px solid #bfdbfe;
+            border-top: 1px solid #bfdbfe;
+            border-bottom: 1px solid #bfdbfe;
+            font-weight: bold;
+            font-size: 14px;
+            color: #1e3a8a;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-radius: 0 4px 4px 0;
+        }
+        .tag-text {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            background-color: #f1f5f9;
+            padding: 3px 6px;
+            border-radius: 3px;
+            margin-right: 4px;
+            border: 1px solid #cbd5e1;
+            display: inline-block;
+        }
+        .tag-text-active {
+            font-size: 11px;
+            font-weight: 600;
+            color: #1e3a8a;
+            background-color: #e0f2fe;
+            padding: 3px 6px;
+            border-radius: 3px;
+            margin-right: 4px;
+            border: 1px solid #bae6fd;
+            display: inline-block;
+        }
+        .rule-alert {
+            font-size: 11px;
+            color: #b91c1c;
+            font-weight: 500;
+            background-color: #fef2f2;
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid #fee2e2;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        .info-line {
+            font-size: 11px;
+            color: #475569;
+            display: block;
+            margin-top: 2px;
+        }
+        .spot-name-link {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e3a8a;
+            text-decoration: none;
+        }
+        .spot-name-link:hover {
+            text-decoration: underline;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
 
 # =========================================================
-# 駅の座標・沿線データ
+# 2. 駅の座標・沿線データ
+#    ※ 星川駅の座標に元データの誤り(経度が九州付近を指していた)があったため修正済み
 # =========================================================
 STATION_DATA = {
     "横浜": {"coords": (35.4657, 139.6223), "lines": ["JR東海道線", "JR根岸線", "東急東横線", "相鉄本線", "京急本線", "横浜市営地下鉄ブルーライン"]},
@@ -50,7 +165,7 @@ STATION_DATA = {
     "元町・中華街": {"coords": (35.4421, 139.6521), "lines": ["みなとみらい線"]},
     "鶴見": {"coords": (35.5074, 139.6762), "lines": ["JR京浜東北線", "JR鶴見線"]},
     "東神奈川": {"coords": (35.4778, 139.6322), "lines": ["JR京浜東北線", "JR横浜線"]},
-    "星川": {"coords": (35.4568, 130.6000), "lines": ["相鉄本線"]},
+    "星川": {"coords": (35.4568, 139.6001), "lines": ["相鉄本線"]},
     "二俣川": {"coords": (35.4624, 139.5323), "lines": ["相鉄本線", "相鉄いずみ野線"]},
     "新杉田": {"coords": (35.3868, 139.6198), "lines": ["JR根岸線", "金沢シーサイドライン"]},
     "金沢文庫": {"coords": (35.3424, 139.6217), "lines": ["京急本線"]},
@@ -103,13 +218,103 @@ STATION_DATA = {
     "本郷台": {"coords": (35.3667, 139.5498), "lines": ["JR根岸線"]},
 }
 
-ALL_LINES = sorted(list(set([line for st_info in STATION_DATA.values() for line in st_info["lines"]])))
+ALL_LINES = sorted({line for info in STATION_DATA.values() for line in info["lines"]})
+
 
 # =========================================================
-# 勉強スポットデータベース（高速化のため関数化しキャッシュ）
+# 3. 店舗情報の自動補完(公式サイトURL・営業時間・定休日)
+#    チェーン店は公式サイトのトップ/店舗一覧ページへ、個人店は店舗名+最寄り駅で
+#    検索できるリンクを自動生成する。営業時間・定休日は目安であり、
+#    最新情報は必ずリンク先で確認することを前提とした値を設定している。
+# =========================================================
+CHAIN_INFO: dict[str, tuple[str, str, str]] = {
+    # ブランド名(部分一致): (公式サイト, 営業時間の目安, 定休日の目安)
+    "スターバックス": ("https://www.starbucks.co.jp/store/", "7:00〜22:00(店舗により異なる)", "施設休館日に準ずる(基本無休)"),
+    "タリーズ": ("https://www.tullys.co.jp/store/", "7:00〜22:00(店舗により異なる)", "施設休館日に準ずる(基本無休)"),
+    "エクセルシオール": ("https://www.doutor.co.jp/excelsior/shop/", "7:00〜22:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "ドトール": ("https://www.doutor.co.jp/dcs/shop/", "7:00〜21:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "カフェ・ド・クリエ": ("https://www.pokkacreate.co.jp/brand/cafedecrie/", "7:00〜21:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "Café de Crié": ("https://www.pokkacreate.co.jp/brand/cafedecrie/", "7:00〜21:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "PRONTO": ("https://www.pronto.co.jp/shop/", "8:00〜23:00(Barタイムあり・店舗差大)", "無休(施設休館日を除く)"),
+    "プロント": ("https://www.pronto.co.jp/shop/", "8:00〜23:00(Barタイムあり・店舗差大)", "無休(施設休館日を除く)"),
+    "珈琲館": ("https://www.kohikan.co.jp/shop/", "8:00〜20:00(店舗により異なる)", "施設休館日に準ずる"),
+    "星乃珈琲店": ("https://www.hoshinocoffee.com/shop/", "8:00〜22:00(店舗により異なる)", "施設休館日に準ずる"),
+    "ブルーボトル": ("https://bluebottlecoffee.jp/cafes", "8:00〜19:00(店舗により異なる)", "無休"),
+    "サンマルク": ("https://www.saint-marc-hd.com/sanmarc/shop/", "7:00〜22:00(店舗により異なる)", "施設休館日に準ずる"),
+    "コメダ珈琲": ("https://www.komeda.co.jp/shop/", "7:00〜19:00(店舗差・24時間営業店あり)", "無休(施設休館日を除く)"),
+    "ゴンチャ": ("https://www.gongcha.co.jp/shop/", "10:00〜21:00(店舗により異なる)", "施設休館日に準ずる"),
+    "猿田彦珈琲": ("https://sarutahiko.co/pages/shoplist", "8:00〜21:00(店舗により異なる)", "施設休館日に準ずる"),
+    "UNI COFFEE ROASTERY": ("https://unicoffeeroastery.com/pages/shop", "9:00〜20:00(店舗により異なる)", "不定休"),
+    "24/7 coffee": ("https://247coffee.jp/", "8:00〜19:00(店舗により異なる)", "不定休"),
+    "THE ROYAL CAFE": ("https://www.royal-holdings.co.jp/brand/theroyalcafe/", "8:00〜22:00(店舗により異なる)", "施設休館日に準ずる"),
+    "GINZA WEST": ("https://ginza-west.co.jp/", "11:00〜21:00(店舗により異なる)", "不定休"),
+    "カフェ・ベローチェ": ("https://www.veloce.co.jp/shop/", "7:00〜22:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "モリバコーヒー": ("https://moriba-coffee.co.jp/", "7:00〜21:00(店舗により異なる)", "施設休館日に準ずる"),
+    "倉式珈琲店": ("https://www.pokkacreate.co.jp/brand/kurashiki/", "7:00〜22:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "むさしの森珈琲": ("https://musashinomori-coffee.jp/", "7:00〜22:00(店舗により異なる)", "無休(施設休館日を除く)"),
+    "VANILLA BEANS": ("https://www.vanillabeans.jp/", "11:00〜19:00(店舗により異なる)", "不定休"),
+}
+
+# 図書館は運営元(県立 / 横浜市立)ごとに公式サイトと基本の休館日を設定
+LIBRARY_INFO: dict[str, tuple[str, str, str]] = {
+    "県立図書館": ("https://www.klnet.pref.kanagawa.jp/", "9:00〜19:00(土日祝は17:00まで)", "月曜日・毎月第2木曜日・特別整理期間"),
+}
+LIBRARY_INFO_DEFAULT = (
+    "https://www.city.yokohama.lg.jp/kurashi/manabi-sports/toshokan/",
+    "9:00〜19:00(館により異なる)",
+    "月曜日(祝日の場合は翌平日)・毎月第2木曜日・特別整理期間",
+)
+
+
+def _lookup_chain(name: str) -> tuple[str, str, str] | None:
+    """店舗名からチェーン情報(URL・営業時間・定休日)を探す。該当なしなら None。"""
+    for brand, info in CHAIN_INFO.items():
+        if brand in name:
+            return info
+    return None
+
+
+def enrich_spot(spot: dict) -> dict:
+    """
+    1件分のスポット情報に、以下の3項目を自動付与する。
+        - url   : 店舗名クリック時の遷移先(公式サイト、無ければ検索結果)
+        - hours : 営業時間(空いている時間)の目安
+        - closed: 定休日の目安
+
+    ※ チェーン店以外・図書館以外は個別の公式サイトまでは特定していないため、
+      店舗名+最寄り駅での検索リンクと、一般的な目安時間を設定している。
+      正確な情報は必ずリンク先の公式情報で確認すること。
+    """
+    name = spot["name"]
+
+    if spot["category"] == "図書館":
+        if "県立図書館" in name:
+            url, hours, closed = LIBRARY_INFO["県立図書館"]
+        else:
+            url, hours, closed = LIBRARY_INFO_DEFAULT
+    else:
+        chain = _lookup_chain(name)
+        if chain:
+            url, hours, closed = chain
+        else:
+            # 個人店・情報未特定チェーン: 店舗名+最寄り駅で検索できるリンクを生成
+            query = quote(f"{name} {spot['station']}")
+            url = f"https://www.google.com/search?q={query}"
+            hours = "10:00〜19:00頃(店舗により異なる・要確認)"
+            closed = "不定休(要公式情報確認)"
+
+    spot["url"] = url
+    spot["hours"] = hours
+    spot["closed"] = closed
+    return spot
+
+
+# =========================================================
+# 4. 勉強スポットデータベース(高速化のため関数化しキャッシュ)
 # =========================================================
 @st.cache_data
-def load_spots_dataframe():
+def load_spots_dataframe() -> pd.DataFrame:
+    """図書館・カフェの生データを読み込み、URL/営業時間/定休日を補完してDataFrame化する。"""
     spots_data = [
         {"name": "神奈川県立図書館", "station": "桜木町", "line": "JR根岸線", "lat": 35.4542, "lon": 139.6275, "category": "図書館", "wifi": True, "power": True, "seats": "約300席", "rule": "PC・電卓使用全席可（サイレントエリア除く）", "access": "桜木町駅 徒歩10分", "desc": "新館は全席コンセント完備。予約システムがあり確実。非常に綺麗で静寂。"},
         {"name": "横浜市中央図書館", "station": "日ノ出町", "line": "京急本線", "lat": 35.4442, "lon": 139.6267, "category": "図書館", "wifi": True, "power": True, "seats": "約400席", "rule": "PC利用は4階・5階の指定席のみ", "access": "日ノ出町駅 徒歩3分", "desc": "地下1階から5階まで閲覧席多数。自習用の席は午前中で埋まることが多い。"},
@@ -338,127 +543,245 @@ def load_spots_dataframe():
         {"name": "cozy-cafe DAIN", "station": "本郷台", "line": "JR根岸線", "lat": 35.3660, "lon": 139.5485, "category": "カフェ", "wifi": True, "power": True, "seats": "アットホーム", "rule": "特になし", "access": "本郷台駅 徒歩3分", "desc": "【電源・Wi-Fi完備】親しみやすい心地よい空間。じっくりノートをまとめる勉強に。"},
         {"name": "ドトールコーヒーショップ 本郷台店", "station": "本郷台", "line": "JR根岸線", "lat": 35.3667, "lon": 139.5498, "category": "カフェ", "wifi": True, "power": False, "seats": "駅前", "rule": "特になし", "access": "本郷台駅改札すぐ", "desc": "安定のインフラ環境。サクッと立ち寄り、高い集中力で効率的に学習を進められます。"}
     ]
+    spots_data = [enrich_spot(spot) for spot in spots_data]
     return pd.DataFrame(spots_data)
+
 
 df_spots = load_spots_dataframe()
 
-# =========================================================
-# ナビゲーション・検索ヘッダー
-# =========================================================
-st.markdown("<h2 style='margin-bottom:0px; letter-spacing:-0.02em;'>📖 駅勉ガイド 横浜広域版</h2>", unsafe_allow_html=True)
-st.markdown("<p style='font-size:12px; color:#64748b; margin-top:4px;'>通勤・通学定期ルートから最適な自習空間を見つける、実用本位のデータベース</p>", unsafe_allow_html=True)
-st.markdown("---")
-
-search_mode = st.radio("【検索軸の選択】", ["鉄道路線から探す（沿線指定）", "特定の駅から探す（ピンポイント）"], horizontal=True)
-
-col_f1, col_f2 = st.columns([2, 2])
-
-with col_f1:
-    if "鉄道路線" in search_mode:
-        # 「JR横宿賀線」のタイポを「JR横須賀線」に修正
-        chosen_line = st.selectbox("路線を選択してください", ALL_LINES, index=ALL_LINES.index("JR横須賀線") if "JR横須賀線" in ALL_LINES else 0)
-        target_stations = [st_name for st_name, info in STATION_DATA.items() if chosen_line in info["lines"]]
-        display_title = f"■ {chosen_line} 沿線の学習スポット一覧"
-        
-        # 実際にデータがある駅を最優先にし、なければ路線の最初の駅にする安全設計
-        registered_stations_in_line = [s for s in target_stations if s in df_spots["station"].values]
-        ref_station = registered_stations_in_line[0] if registered_stations_in_line else (target_stations[0] if target_stations else "横浜")
-    else:
-        available_stations = sorted(list(set(df_spots["station"])))
-        chosen_station = st.selectbox("駅を選択してください", available_stations, index=0)
-        target_stations = [chosen_station]
-        display_title = f"■ {chosen_station} 駅周辺の学習スポット一覧"
-        ref_station = chosen_station
-with col_f2:
-    selected_cats = st.multiselect("施設種別", ["図書館", "カフェ"], default=["図書館", "カフェ"])
-    c_col1, c_col2 = st.columns(2)
-    with c_col1:
-        wifi_req = st.checkbox("🛜 公衆Wi-Fi必須")
-    with c_col2:
-        power_req = st.checkbox("🔌 コンセント必須")
-
-st.markdown("---")
 
 # =========================================================
-# メインコンテンツレイアウト
+# 5. 一覧表・地図ポップアップ用のHTML生成
 # =========================================================
-col_main, col_map = st.columns([1.8, 1.1], gap="medium")
+def _wifi_power_tags(row: pd.Series) -> str:
+    """Wi-Fi・電源の有無をタグ表示用HTMLに変換する。"""
+    wifi_tag = "<span class='tag-text-active'>🛜 Wi-Fi</span>" if row["wifi"] else "<span class='tag-text'>🛜 なし</span>"
+    power_tag = "<span class='tag-text-active'>🔌 電源</span>" if row["power"] else "<span class='tag-text'>🔌 なし</span>"
+    return wifi_tag + power_tag
 
-filtered_df = df_spots[df_spots["station"].isin(target_stations)].copy()
 
-if selected_cats:
-    filtered_df = filtered_df[filtered_df["category"].isin(selected_cats)]
-else:
-    filtered_df = pd.DataFrame(columns=df_spots.columns)
+def _safe_text(value, default: str = "情報なし") -> str:
+    """NaNの場合にデフォルト文字列を返すヘルパー。"""
+    return value if pd.notna(value) else default
 
-if wifi_req:
-    filtered_df = filtered_df[filtered_df["wifi"]]
-if power_req:
-    filtered_df = filtered_df[filtered_df["power"]]
 
-with col_main:
-    st.markdown(f"<div class='line-header'>{display_title} ({len(filtered_df)}件該当)</div>", unsafe_allow_html=True)
-    
-    if not filtered_df.empty:
-        table_html = "<table class='spot-table'><thead><tr><th style='width: 18%;'>最寄り駅</th><th style='width: 32%;'>施設名 / 設備</th><th style='width: 20%;'>座席・ルール</th><th style='width: 30%;'>特徴・詳細</th></tr></thead><tbody>"
-        
-        for _, row in filtered_df.iterrows():
-            w_tag = "<span class='tag-text-active'>🛜 Wi-Fi</span>" if row['wifi'] else "<span class='tag-text'>🛜 なし</span>"
-            p_tag = "<span class='tag-text-active'>🔌 電源</span>" if row['power'] else "<span class='tag-text'>🔌 なし</span>"
-            
-            seats_text = row['seats'] if pd.notna(row.get('seats')) else "情報なし"
-            rule_text = row['rule'] if pd.notna(row.get('rule')) else "特になし"
-            
-            table_html += f"<tr>" \
-                          f"<td><b>{row['station']}駅</b><br><span style='font-size:11px; color:#64748b;'>{row['access']}</span></td>" \
-                          f"<td><strong style='font-size:14px; color:#1e3a8a;'>{row['name']}</strong><br><span style='font-size:10px; color:#475569; background:#e2e8f0; padding:1px 4px; border-radius:2px; margin-right:5px; font-weight:600;'>{row['category']}</span><div style='margin-top:6px;'>{w_tag}{p_tag}</div></td>" \
-                          f"<td><span style='color:#0f172a; font-weight:bold;'>{seats_text}</span><br><span class='rule-alert'>⚠ {rule_text}</span></td>" \
-                          f"<td><div style='font-weight:400; color:#334155;'>{row['desc']}</div></td>" \
-                          f"</tr>"
-        
-        table_html += "</tbody></table>"
-        st.markdown(table_html, unsafe_allow_html=True)
-    else:
-        st.warning("選択された条件に合致するスポットは現在登録されていません。条件を緩めてみてください。")
+def render_spot_row(row: pd.Series) -> str:
+    """1スポット分の <tr> を生成する。店舗名は公式サイト(または検索結果)へのリンクにする。"""
+    seats_text = _safe_text(row.get("seats"))
+    rule_text = _safe_text(row.get("rule"), "特になし")
 
-with col_map:
-    st.markdown("<div style='font-size:13px; font-weight:bold; color:#1e293b; margin-bottom:8px;'>🌐 周辺マップ（位置確認用）</div>", unsafe_allow_html=True)
-    
-    # STATION_DATAに座標が定義されているか安全にチェック
+    name_cell = (
+        f"<a class='spot-name-link' href='{row['url']}' target='_blank' rel='noopener noreferrer'>"
+        f"{row['name']}</a>"
+        f"<br><span style='font-size:10px; color:#475569; background:#e2e8f0; padding:1px 4px; "
+        f"border-radius:2px; margin-right:5px; font-weight:600;'>{row['category']}</span>"
+        f"<div style='margin-top:6px;'>{_wifi_power_tags(row)}</div>"
+    )
+
+    access_cell = (
+        f"<b>{row['station']}駅</b>"
+        f"<span class='info-line'>🚶 {row['access']}</span>"
+    )
+
+    hours_cell = (
+        f"<span class='info-line'>🕒 {row['hours']}</span>"
+        f"<span class='info-line'>🚫 定休日: {row['closed']}</span>"
+    )
+
+    seats_rule_cell = (
+        f"<span style='color:#0f172a; font-weight:bold;'>{seats_text}</span>"
+        f"<br><span class='rule-alert'>⚠ {rule_text}</span>"
+    )
+
+    desc_cell = f"<div style='font-weight:400; color:#334155;'>{row['desc']}</div>"
+
+    return (
+        "<tr>"
+        f"<td>{name_cell}</td>"
+        f"<td>{access_cell}</td>"
+        f"<td>{hours_cell}</td>"
+        f"<td>{seats_rule_cell}</td>"
+        f"<td>{desc_cell}</td>"
+        "</tr>"
+    )
+
+
+def render_spot_table(filtered_df: pd.DataFrame) -> str:
+    """検索結果一覧のHTMLテーブルを生成する。"""
+    header = (
+        "<table class='spot-table'><thead><tr>"
+        "<th style='width: 24%;'>施設名</th>"
+        "<th style='width: 16%;'>最寄り駅・アクセス</th>"
+        "<th style='width: 18%;'>営業時間・定休日</th>"
+        "<th style='width: 16%;'>座席・ルール</th>"
+        "<th style='width: 26%;'>概要</th>"
+        "</tr></thead><tbody>"
+    )
+    rows = "".join(render_spot_row(row) for _, row in filtered_df.iterrows())
+    return header + rows + "</tbody></table>"
+
+
+def build_map_popup(spot: pd.Series) -> str:
+    """地図上のピンをクリックした際のポップアップHTMLを生成する。"""
+    seats_text = _safe_text(spot.get("seats"))
+    return f"""
+    <div style='font-family:sans-serif; font-size:12px; line-height:1.5; width:220px;'>
+        <a href='{spot['url']}' target='_blank' rel='noopener noreferrer'>
+            <strong>{spot['name']}</strong>
+        </a> ({seats_text})<br>
+        <span style='color:#64748b;'>🚶 {spot['access']}</span><br>
+        <span style='color:#64748b;'>🕒 {spot['hours']}</span><br>
+        <span style='color:#64748b;'>🚫 定休日: {spot['closed']}</span>
+    </div>
+    """
+
+
+def render_map(filtered_df: pd.DataFrame, ref_station: str):
+    """検索結果を地図上にマーカー表示する。"""
     if ref_station in STATION_DATA:
         center_lat, center_lon = STATION_DATA[ref_station]["coords"]
     else:
-        center_lat, center_lon = (35.4657, 139.6223) # デフォルトで横浜駅
-        
-    m = folium.Map(location=[center_lat, center_lon], zoom_start=13, tiles="OpenStreetMap")
+        center_lat, center_lon = (35.4657, 139.6223)  # デフォルト: 横浜駅
 
-    if not filtered_df.empty:
-        for _, spot in filtered_df.iterrows():
-            pin_color = "blue" if spot['category'] == "図書館" else "cadetblue"
-            seats_text = spot['seats'] if pd.notna(spot.get('seats')) else "情報なし"
-            
-            popup_html = f"""
-            <div style='font-family:sans-serif; font-size:12px; line-height:1.4; width:200px;'>
-                <strong>{spot['name']}</strong> ({seats_text})<br>
-                <span style='color:#64748b;'>{spot['access']}</span>
-            </div>
-            """
-            folium.Marker(
-                [spot["lat"], spot["lon"]],
-                popup=folium.Popup(popup_html, max_width=250),
-                tooltip=spot["name"],
-                icon=folium.Icon(color=pin_color, icon="info-sign")
-            ).add_to(m)
-            
-    st_folium(m, width="100%", height=480, key=f"map_{search_mode}_{ref_station}")
+    fmap = folium.Map(location=[center_lat, center_lon], zoom_start=13, tiles="OpenStreetMap")
+
+    for _, spot in filtered_df.iterrows():
+        pin_color = "blue" if spot["category"] == "図書館" else "cadetblue"
+        folium.Marker(
+            [spot["lat"], spot["lon"]],
+            popup=folium.Popup(build_map_popup(spot), max_width=260),
+            tooltip=spot["name"],
+            icon=folium.Icon(color=pin_color, icon="info-sign"),
+        ).add_to(fmap)
+
+    return fmap
+
 
 # =========================================================
-# フッター
+# 6. ナビゲーション・検索ヘッダー
 # =========================================================
-st.markdown("---")
-st.markdown("""
-    <div style='text-align: center; font-size: 11px; color: #94a3b8; padding-top: 5px;'>
-        駅勉ガイド 横浜広域版 | 当サイトは公開データを基にしたデータベースです。<br>
-        最新の利用ルールや開館時間は各施設の公式サイトを直接ご確認ください。
-    </div>
-""", unsafe_allow_html=True)
+def render_header() -> None:
+    st.markdown("<h2 style='margin-bottom:0px; letter-spacing:-0.02em;'>📖 駅勉ガイド 横浜広域版</h2>", unsafe_allow_html=True)
+    st.markdown(
+        "<p style='font-size:12px; color:#64748b; margin-top:4px;'>"
+        "通勤・通学定期ルートから最適な自習空間を見つける、実用本位のデータベース</p>",
+        unsafe_allow_html=True,
+    )
+    st.markdown("---")
+
+
+def render_filters(df_spots: pd.DataFrame):
+    """検索条件(路線/駅・施設種別・Wi-Fi/電源)のUIを表示し、選択結果を返す。"""
+    search_mode = st.radio(
+        "【検索軸の選択】",
+        ["鉄道路線から探す（沿線指定）", "特定の駅から探す（ピンポイント）"],
+        horizontal=True,
+    )
+
+    col_line, col_option = st.columns([2, 2])
+
+    with col_line:
+        if "鉄道路線" in search_mode:
+            default_index = ALL_LINES.index("JR横須賀線") if "JR横須賀線" in ALL_LINES else 0
+            chosen_line = st.selectbox("路線を選択してください", ALL_LINES, index=default_index)
+            target_stations = [name for name, info in STATION_DATA.items() if chosen_line in info["lines"]]
+            display_title = f"■ {chosen_line} 沿線の学習スポット一覧"
+
+            # データが実在する駅を優先し、無ければ路線内の先頭駅にフォールバック
+            registered_stations = [s for s in target_stations if s in df_spots["station"].values]
+            ref_station = registered_stations[0] if registered_stations else (target_stations[0] if target_stations else "横浜")
+        else:
+            available_stations = sorted(df_spots["station"].unique())
+            chosen_station = st.selectbox("駅を選択してください", available_stations, index=0)
+            target_stations = [chosen_station]
+            display_title = f"■ {chosen_station} 駅周辺の学習スポット一覧"
+            ref_station = chosen_station
+
+    with col_option:
+        selected_cats = st.multiselect("施設種別", ["図書館", "カフェ"], default=["図書館", "カフェ"])
+        col_wifi, col_power = st.columns(2)
+        with col_wifi:
+            wifi_required = st.checkbox("🛜 公衆Wi-Fi必須")
+        with col_power:
+            power_required = st.checkbox("🔌 コンセント必須")
+
+    st.markdown("---")
+    return target_stations, display_title, ref_station, selected_cats, wifi_required, power_required
+
+
+def apply_filters(
+    df_spots: pd.DataFrame,
+    target_stations: list[str],
+    selected_cats: list[str],
+    wifi_required: bool,
+    power_required: bool,
+) -> pd.DataFrame:
+    """選択された条件に応じてスポット一覧を絞り込む。"""
+    filtered = df_spots[df_spots["station"].isin(target_stations)].copy()
+
+    if selected_cats:
+        filtered = filtered[filtered["category"].isin(selected_cats)]
+    else:
+        filtered = pd.DataFrame(columns=df_spots.columns)
+
+    if wifi_required:
+        filtered = filtered[filtered["wifi"]]
+    if power_required:
+        filtered = filtered[filtered["power"]]
+
+    return filtered
+
+
+def render_footer() -> None:
+    st.markdown("---")
+    st.markdown(
+        """
+        <div style='text-align: center; font-size: 11px; color: #94a3b8; padding-top: 5px;'>
+            駅勉ガイド 横浜広域版 | 当サイトは公開データを基にしたデータベースです。<br>
+            店舗名リンク先・営業時間・定休日は目安です。最新情報は必ず各施設の公式サイトでご確認ください。
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+# =========================================================
+# 7. メイン処理
+# =========================================================
+def main() -> None:
+    load_css()
+    render_header()
+
+    (
+        target_stations,
+        display_title,
+        ref_station,
+        selected_cats,
+        wifi_required,
+        power_required,
+    ) = render_filters(df_spots)
+
+    filtered_df = apply_filters(df_spots, target_stations, selected_cats, wifi_required, power_required)
+
+    col_main, col_map = st.columns([1.8, 1.1], gap="medium")
+
+    with col_main:
+        st.markdown(f"<div class='line-header'>{display_title} ({len(filtered_df)}件該当)</div>", unsafe_allow_html=True)
+        if not filtered_df.empty:
+            st.markdown(render_spot_table(filtered_df), unsafe_allow_html=True)
+        else:
+            st.warning("選択された条件に合致するスポットは現在登録されていません。条件を緩めてみてください。")
+
+    with col_map:
+        st.markdown(
+            "<div style='font-size:13px; font-weight:bold; color:#1e293b; margin-bottom:8px;'>🌐 周辺マップ（位置確認用）</div>",
+            unsafe_allow_html=True,
+        )
+        fmap = render_map(filtered_df, ref_station)
+        st_folium(fmap, width="100%", height=480, key=f"map_{ref_station}_{len(filtered_df)}")
+
+    render_footer()
+
+
+if __name__ == "__main__":
+    main()
