@@ -93,7 +93,7 @@ STATION_COORDS = {
 STATIONS = sorted(list(STATION_COORDS.keys()))
 
 # =========================================================
-# 勉強スポットのデータベース（図書館 + カフェ全100店舗を完全網羅）
+# 勉強スポットのデータベース（新規スポット13件追加！全124件）
 # =========================================================
 SPOTS_DATA = [
     # --- 図書館データ ---
@@ -136,7 +136,7 @@ SPOTS_DATA = [
     {"name": "珈琲館 新横浜店", "station": "新横浜", "lat": 35.5090, "lon": 139.6160, "category": "カフェ", "wifi": True, "power": True, "access": "新横浜駅 徒歩5分", "desc": "静かに集中したい日の自習におすすめ。"},
     {"name": "スターバックス 新横浜駅店", "station": "新横浜", "lat": 35.5071, "lon": 139.6176, "category": "カフェ", "wifi": True, "power": True, "access": "新横浜駅構内", "desc": "ビジネスマンが多いため、作業に集中しやすい雰囲気です。"},
 
-    # --- カフェデータ（26〜100: 桜木町・関内・みなとみらい・沿線全域） ---
+    # --- カフェデータ（26〜100: 既存沿線全域） ---
     {"name": "スターバックス CIAL桜木町店", "station": "桜木町", "lat": 35.4508, "lon": 139.6315, "category": "カフェ", "wifi": True, "power": True, "access": "桜木町駅直結 CIAL内", "desc": "駅直結で非常に便利。仕事や勉強の隙間時間に最適。"},
     {"name": "スターバックス コレットマーレ店", "station": "桜木町", "lat": 35.4518, "lon": 139.6305, "category": "カフェ", "wifi": True, "power": True, "access": "桜木町駅 徒歩1分", "desc": "窓側席からの景色が良く、リフレッシュしながら勉強できます。"},
     {"name": "ドトールコーヒー 桜木町店", "station": "桜木町", "lat": 35.4501, "lon": 139.6310, "category": "カフェ", "wifi": True, "power": False, "access": "桜木町駅 徒歩1分", "desc": "駅前の便利な立地。サクッと集中したいときに重宝。"},
@@ -169,7 +169,7 @@ SPOTS_DATA = [
     {"name": "カフェ・ド・クリエ みなとみらい店", "station": "みなとみらい", "lat": 35.4568, "lon": 139.6308, "category": "カフェ", "wifi": True, "power": True, "access": "みなとみらい駅 徒歩4分", "desc": "ビジネス街側にあるため、比較的落ち着いて作業ができます。"},
     {"name": "スターバックス 横浜ワールドポーターズ店", "station": "みなとみらい", "lat": 35.4545, "lon": 139.6385, "category": "カフェ", "wifi": True, "power": False, "access": "みなとみらい駅 徒歩8分", "desc": "ワールドポーターズ内。平日は快適。"},
     {"name": "レオニダスカフェ 横浜ワールドポーターズ店", "station": "みなとみらい", "lat": 35.4543, "lon": 139.6380, "category": "カフェ", "wifi": False, "power": False, "access": "みなとみらい駅 徒歩8分", "desc": "チョコレート専門店併設・甘いもので脳を活性化。"},
-    {"name": "UNI COFFEE ROASTERY ハンマーヘッド店", "station": "みなとみらい", "lat": 35.4560, "lon": 139.6425, "category": "カフェ", "wifi": True, "power": True, "access": "みなとみらい駅 徒歩12分", "desc": "海が見える絶好のロケーション。Wi-Fiと電源完備。"},
+    {"name": "UNI COFFEE ROASTERY ハンマーヘッド店", "station": "みなとみらい", "lat": 35.4560, "lon": 139.6425, "category": "カフェ", "wifi": True, "power": True, "access": "みなとみらい駅 徒歩12分", "desc": "海が見える絶好 of location. Wi-Fiと電源完備。"},
     {"name": "Starbucks Coffee 横浜ハンマーヘッド店", "station": "みなとみらい", "lat": 35.4558, "lon": 139.6430, "category": "カフェ", "wifi": True, "power": True, "access": "みなとみらい駅 徒歩12分", "desc": "リラックスして勉強。"},
     {"name": "PIE HOLIC", "station": "みなとみらい", "lat": 35.4540, "lon": 139.6415, "category": "カフェ", "wifi": False, "power": False, "access": "みなとみらい駅 徒歩10分", "desc": "お洒落なカリフォルニアスタイル。オフの日の勉強に。"},
     {"name": "スターバックス 元町店", "station": "元町・中華街", "lat": 35.4398, "lon": 139.6510, "category": "カフェ", "wifi": True, "power": True, "access": "元町・中華街駅 徒歩3分", "desc": "元町商店街の中。落ち着いた客層でPC作業が進みます。"},
@@ -182,7 +182,7 @@ SPOTS_DATA = [
     {"name": "タリーズコーヒー 慶應義塾大学日吉キャンパス店", "station": "日吉", "lat": 35.5545, "lon": 139.6480, "category": "カフェ", "wifi": True, "power": True, "access": "日吉駅 徒歩2分", "desc": "広々としており自習に最も適した環境の一つ。"},
     {"name": "珈琲館 日吉店", "station": "日吉", "lat": 35.5530, "lon": 139.6455, "category": "カフェ", "wifi": True, "power": True, "access": "日吉駅西口 徒歩3分", "desc": "静かに集中したい時におすすめ。"},
     {"name": "サンマルクカフェ 日吉店", "station": "日吉", "lat": 35.5532, "lon": 139.6462, "category": "カフェ", "wifi": True, "power": False, "access": "日吉駅西口 徒歩2分", "desc": "自分のペースでノート作業が進められます。"},
-    {"name": "スターバックス 菊名駅店", "station": "菊名", "lat": 35.5098, "lon": 139.6315, "category": "カフェ", "wifi": True, "power": True, "access": "菊名駅改札すぐ", "desc": "乗り換えの合間に作業ができる逆境の立地。電源あり。"},
+    {"name": "スターバックス 菊名駅店", "station": "菊名", "lat": 35.5098, "lon": 139.6315, "category": "カフェ", "wifi": True, "power": True, "access": "菊名駅改札すぐ", "desc": "乗り換えの合間に作業ができる環境。電源あり。"},
     {"name": "ドトールコーヒー 菊名店", "station": "菊名", "lat": 35.5095, "lon": 139.6308, "category": "カフェ", "wifi": True, "power": False, "access": "菊名駅西口 徒歩1分", "desc": "隙間時間のインプット学習に重宝します。"},
     {"name": "タリーズコーヒー あざみ野駅店", "station": "あざみ野", "lat": 35.5685, "lon": 139.5538, "category": "カフェ", "wifi": True, "power": True, "access": "あざみ野駅直結", "desc": "乗り換え時にサクッと寄れる、電源完備の頼れるカフェ。"},
     {"name": "スターバックス あざみ野みすずが丘店", "station": "あざみ野", "lat": 35.5650, "lon": 139.5450, "category": "カフェ", "wifi": True, "power": True, "access": "あざみ野駅からバス", "desc": "落ち着いて勉強したい週末に。"},
@@ -212,6 +212,21 @@ SPOTS_DATA = [
     {"name": "スターバックス 金沢文庫店", "station": "金沢文庫", "lat": 35.3425, "lon": 139.6220, "category": "カフェ", "wifi": True, "power": True, "access": "金沢文庫駅 徒歩2分", "desc": "地元学生やビジネスマンの自習利用が多い。"},
     {"name": "ドトールコーヒー 金沢文庫店", "station": "金沢文庫", "lat": 35.3422, "lon": 139.6215, "category": "カフェ", "wifi": True, "power": False, "access": "金沢文庫駅東口 徒歩1分", "desc": "落ち着いた客席配置で集中しやすい。"},
     {"name": "タリーズコーヒー 港南台バーズ店", "station": "港南台", "lat": 35.3755, "lon": 139.5670, "category": "カフェ", "wifi": True, "power": True, "access": "港南台駅前 バーズ内", "desc": "一人用の席でじっくりPC作業や自習に取り組めます。"},
+
+    # --- 【新駅周辺リサーチ追加分】 ---
+    {"name": "タリーズコーヒー 綱島駅前店", "station": "綱島", "lat": 35.5368, "lon": 139.6342, "category": "カフェ", "wifi": True, "power": True, "access": "綱島駅東口 徒歩1分", "desc": "【電源あり】カウンター席にコンセント完備。ビジネス利用も多く集中しやすい環境。"},
+    {"name": "ドトールコーヒーショップ 綱島西口店", "station": "綱島", "lat": 35.5362, "lon": 139.6338, "category": "カフェ", "wifi": True, "power": False, "access": "綱島駅西口 徒歩2分", "desc": "駅前の便利な店舗。サクッと短時間のインプットや読書におすすめ。"},
+    {"name": "テラコーヒー 白楽店", "station": "白楽", "lat": 35.4912, "lon": 139.6265, "category": "カフェ", "wifi": False, "power": False, "access": "白楽駅西口 徒歩1分", "desc": "こだわりの自家焙煎珈琲店。静かに本を読んだり思考を整理するのに最適。"},
+    {"name": "ドトールコーヒーショップ 白楽駅前店", "station": "白楽", "lat": 35.4902, "lon": 139.6269, "category": "カフェ", "wifi": True, "power": False, "access": "白楽駅西口すぐ", "desc": "改札目の前でアクセス抜群。大学が近いため学生の自習利用も多い。"},
+    {"name": "ミスタードーナツ いずみ野ショップ", "station": "いずみ野", "lat": 35.4185, "lon": 139.4955, "category": "カフェ", "wifi": True, "power": False, "access": "いずみ野駅直結", "desc": "駅高架下の店舗。平日の昼下がりなど比較的落ち着いて作業ができます。"},
+    {"name": "相鉄ライフいずみ野 休憩スペース", "station": "いずみ野", "lat": 35.4190, "lon": 139.4960, "category": "図書館", "wifi": False, "power": False, "access": "いずみ野駅徒歩2分", "desc": "ライフ内にあるオープンな休憩スペース。軽めのノート作業や読書に。"},
+    {"name": "ドトールコーヒーショップ 京急弘明寺店", "station": "弘明寺(京急)", "lat": 35.4245, "lon": 139.5980, "category": "カフェ", "wifi": True, "power": False, "access": "京急弘明寺駅改札すぐ", "desc": "駅直結で雨の日も快適。商店街や公園の近くで落ち着いた客層。"},
+    {"name": "ガスト 弘明寺店", "station": "弘明寺(地下鉄)", "lat": 35.4245, "lon": 139.6080, "category": "カフェ", "wifi": True, "power": True, "access": "地下鉄弘明寺駅 徒歩2分", "desc": "【電源あり】すかいらーくWi-Fiとコンセント完備。席が広く参考書を広げやすい。"},
+    {"name": "マクドナルド 井土ヶ谷店", "station": "井土ヶ谷", "lat": 35.4335, "lon": 139.5992, "category": "カフェ", "wifi": True, "power": True, "access": "井土ヶ谷駅 徒歩1分", "desc": "【電源あり】カウンター席に充電設備あり。駅からすぐでクイックな学習に便利。"},
+    {"name": "ミスタードーナツ 杉田ショップ", "station": "杉田", "lat": 35.3815, "lon": 139.6205, "category": "カフェ", "wifi": True, "power": False, "access": "杉田駅直結 プララ杉田内", "desc": "京急杉田駅直結。適度な賑やかさがあり、リラックスして勉強できます。"},
+    {"name": "上島珈琲店 金沢八景店", "station": "金沢八景", "lat": 35.3272, "lon": 139.6212, "category": "カフェ", "wifi": True, "power": True, "access": "金沢八景駅 徒歩1分", "desc": "【電源あり】大学が近いエリア。レトロでモダンな空間で長時間の勉強に抜群。"},
+    {"name": "プロント 湘南台店", "station": "湘南台", "lat": 35.3965, "lon": 139.4668, "category": "カフェ", "wifi": True, "power": True, "access": "湘南台駅西口 徒歩1分", "desc": "【電源あり】一人用カウンター席が充実しており、PC作業や自習が快適。"},
+    {"name": "スターバックス 湘南台駅ビル店", "station": "湘南台", "lat": 35.3960, "lon": 139.4662, "category": "カフェ", "wifi": True, "power": True, "access": "湘南台駅直結", "desc": "駅構内にあるスタバ。ビジネスパーソンや学生が常に作業をしています。"},
 ]
 
 @st.cache_data
