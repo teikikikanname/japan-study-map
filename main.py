@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# 駅の座標データ
+# 駅の座標データ（新規追加の駅も含めて完全網羅）
 # =========================================================
 STATION_COORDS = {
     "横浜":     (35.4657, 139.6223),
@@ -40,7 +40,7 @@ STATION_COORDS = {
     "日ノ出町": (35.4433, 139.6267),
     "山手":     (35.4269, 139.6466),
     "東神奈川": (35.4778, 139.6322),
-    "星川":     (35.4568, 139.6000),
+    "星川":     (35.4568, 130.6000),
     "馬車道":   (35.4491, 139.6361),
     "関内":     (35.4442, 139.6364),
     "日本大通り": (35.4475, 139.6425),
@@ -67,7 +67,7 @@ SPOTS_DATA = [
     {"name": "横浜市保土ケ谷図書館", "station": "星川", "lat": 35.4528, "lon": 139.5982, "category": "図書館", "wifi": False, "power": False, "access": "星川駅 徒歩6分", "desc": "緑豊かな落ち着いた環境で勉強ができます。"},
     {"name": "横浜市旭図書館", "station": "二俣川", "lat": 35.4665, "lon": 139.5240, "category": "図書館", "wifi": False, "power": False, "access": "二俣川駅北口 徒歩11分", "desc": "学生の利用も多い相鉄沿線の学習スポット。"},
 
-    # --- カフェデータ（横浜・新横浜） ---
+    # --- カフェデータ（1〜25: 横浜・新横浜） ---
     {"name": "スターバックス 横浜西口店", "station": "横浜", "lat": 35.4645, "lon": 139.6210, "category": "カフェ", "wifi": True, "power": True, "access": "横浜駅西口 徒歩3分", "desc": "定番のスタバ。作業や勉強に集中しやすい環境です。"},
     {"name": "タリーズコーヒー NEWoMan横浜店", "station": "横浜", "lat": 35.4661, "lon": 139.6225, "category": "カフェ", "wifi": True, "power": True, "access": "横浜駅直結 NEWoMan内", "desc": "駅直結の綺麗で洗練された店舗。デスクワークも快適。"},
     {"name": "ドトールコーヒー 横浜西口店", "station": "横浜", "lat": 35.4640, "lon": 139.6205, "category": "カフェ", "wifi": True, "power": False, "access": "横浜駅西口 徒歩2分", "desc": "サクッと短時間集中したい時におすすめの手軽なカフェ。"},
@@ -92,9 +92,9 @@ SPOTS_DATA = [
     {"name": "エクセルシオールカフェ 新横浜店", "station": "新横浜", "lat": 35.5085, "lon": 139.6170, "category": "カフェ", "wifi": True, "power": True, "access": "新横浜駅 徒歩3分", "desc": "席数が比較的多く、ゆったりと落ち着いて勉強に取り組めます。"},
     {"name": "PRONTO 新横浜店", "station": "新横浜", "lat": 35.5068, "lon": 139.6185, "category": "カフェ", "wifi": True, "power": True, "access": "新横浜駅 徒歩4分", "desc": "カウンター席に電源があり、PC作業がしやすいです。"},
     {"name": "珈琲館 新横浜店", "station": "新横浜", "lat": 35.5090, "lon": 139.6160, "category": "カフェ", "wifi": True, "power": True, "access": "新横浜駅 徒歩5分", "desc": "静かに集中したい日の自習におすすめ。"},
-    {"name": "スターバックス 新横浜駅店", "station": "新横浜", "lat": 35.5071, "lon": 139.6176, "category": "カフェ", "wifi": True, "power": True, "access": "新横浜駅構内", "desc": "ビジネスマンが多いため、作業に集中しやすい雰囲気です。"},
+    {"name": "スターバックス 新横浜駅店", "station": "新横浜", "lat": 35.5071, "lon": 139.6176, "category": "カフェ", "wifi": True, "power": True, "access": "新横浜駅構内", "desc": "ビジネスマンが多いため、作業に集中しやすい atmosphere です。"},
 
-    # --- カフェデータ（新規追加分） ---
+    # --- カフェデータ（26〜100: 新規追加分） ---
     {"name": "スターバックス CIAL桜木町店", "station": "桜木町", "lat": 35.4508, "lon": 139.6315, "category": "カフェ", "wifi": True, "power": True, "access": "桜木町駅直結 CIAL内", "desc": "駅直結で非常に便利。仕事や勉強の隙間時間に最適。"},
     {"name": "スターバックス コレットマーレ店", "station": "桜木町", "lat": 35.4518, "lon": 139.6305, "category": "カフェ", "wifi": True, "power": True, "access": "桜木町駅 徒歩1分", "desc": "窓側席からの景色が良く、リフレッシュしながら勉強できます。"},
     {"name": "ドトールコーヒー 桜木町店", "station": "桜木町", "lat": 35.4501, "lon": 139.6310, "category": "カフェ", "wifi": True, "power": False, "access": "桜木町駅 徒歩1分", "desc": "駅前の便利な立地。サクッと集中したいときに重宝。"},
@@ -146,7 +146,7 @@ SPOTS_DATA = [
     {"name": "スターバックス あざみ野みすずが丘店", "station": "あざみ野", "lat": 35.5650, "lon": 139.5450, "category": "カフェ", "wifi": True, "power": True, "access": "あざみ野駅からバス", "desc": "落ち着いて勉強したい週末に。"},
     {"name": "スターバックス センター北店", "station": "センター北", "lat": 35.5538, "lon": 139.5785, "category": "カフェ", "wifi": True, "power": True, "access": "センター北駅 徒歩2分", "desc": "広めのデスクで集中してPC作業ができます。"},
     {"name": "タリーズコーヒー センター南店", "station": "センター南", "lat": 35.5440, "lon": 139.5728, "category": "カフェ", "wifi": True, "power": True, "access": "センター南駅直結", "desc": "カウンター席にコンセントが並んでいます。"},
-    {"name": "スターバックス センター南店", "station": "センター南", "lat": 35.5446, "lon": 139.5735, "category": "カフェ", "wifi": True, "power": True, "access": "センター南駅 徒歩3分", "desc": "開放感のあるガラス張り。勉強のモチベーションが上がます。"},
+    {"name": "スターバックス センター南店", "station": "センター南", "lat": 35.5446, "lon": 139.5735, "category": "カフェ", "wifi": True, "power": True, "access": "センター南駅 徒歩3分", "desc": "開放感のあるガラス張り。勉強のモチベーションが上がります。"},
     {"name": "ドトールコーヒー センター南店", "station": "センター南", "lat": 35.5442, "lon": 139.5725, "category": "カフェ", "wifi": True, "power": False, "access": "センター南駅 徒歩1分", "desc": "サクッと資料を読んだり、短時間の集中自習に便利。"},
     {"name": "スターバックス 戸塚店", "station": "戸塚", "lat": 35.4012, "lon": 139.5345, "category": "カフェ", "wifi": True, "power": True, "access": "戸塚駅東口 徒歩2分", "desc": "自習客が多く、刺激を受けます。仕事帰りや学校帰りに。"},
     {"name": "タリーズコーヒー 戸塚モディ店", "station": "戸塚", "lat": 35.4005, "lon": 139.5338, "category": "カフェ", "wifi": True, "power": True, "access": "戸塚駅直結 モディ内", "desc": "ビジネスマンの作業利用も非常に多いです。"},
@@ -157,14 +157,14 @@ SPOTS_DATA = [
     {"name": "ドトールコーヒー 上大岡店", "station": "上大岡", "lat": 35.4082, "lon": 139.5958, "category": "カフェ", "wifi": True, "power": False, "access": "上大岡駅西口 徒歩2分", "desc": "隙間時間にテキストを広げるのに便利。"},
     {"name": "サンマルクカフェ 上大岡店", "station": "上大岡", "lat": 35.4080, "lon": 139.5962, "category": "カフェ", "wifi": True, "power": False, "access": "上大岡駅 徒歩3分", "desc": "一人で座れる席が多く、長時間の学習に。"},
     {"name": "スターバックス シァル鶴見店", "station": "鶴見", "lat": 35.5076, "lon": 139.6765, "category": "カフェ", "wifi": True, "power": True, "access": "鶴見駅直結 CIAL内", "desc": "駅ビル内で雨でも安心。電源席でPC作業も快適。"},
-    {"name": "ドトールコーヒー 鶴見東口店", "station": "鶴見", "lat": 35.5070, "lon": 139.6760, "category": "カフェ", "wifi": True, "power": False, "access": "鶴見駅東口 徒歩1分", "desc": "クイックなインプット学習に最適。"},
+    {"name": "ドトールコーヒー 鶴見東口店", "station": "鶴見", "lat": 35.5070, "lon": 139.6760, "category": "カフェ", "wifi": True, "power": False, "access": "鶴見駅東口 徒歩1分", "desc": "クイックなインプット学習に最適. "},
     {"name": "タリーズコーヒー 鶴見店", "station": "鶴見", "lat": 35.5065, "lon": 139.6755, "category": "カフェ", "wifi": True, "power": True, "access": "鶴見駅西口 徒歩3分", "desc": "集中して作業ができる店舗。"},
     {"name": "スターバックス 東神奈川店", "station": "東神奈川", "lat": 35.4780, "lon": 139.6325, "category": "カフェ", "wifi": True, "power": True, "access": "東神奈川駅直結", "desc": "乗り換えの隙間にサクッと勉強をこなせます。"},
     {"name": "ドトールコーヒー 東神奈川店", "station": "東神奈川", "lat": 35.4775, "lon": 139.6320, "category": "カフェ", "wifi": True, "power": False, "access": "東神奈川駅 徒歩1分", "desc": "手軽にコーヒーを飲みながら復習を。"},
     {"name": "タリーズコーヒー 東神奈川店", "station": "東神奈川", "lat": 35.4782, "lon": 139.6315, "category": "カフェ", "wifi": True, "power": True, "access": "東神奈川駅 徒歩2分", "desc": "PCを使った自習に向いています。"},
     {"name": "ドトールコーヒー 保土ケ谷店", "station": "保土ケ谷", "lat": 35.4465, "lon": 139.5938, "category": "カフェ", "wifi": True, "power": False, "access": "保土ケ谷駅西口直結", "desc": "定期ルート上でサクッと勉強を進めるのに最適。"},
     {"name": "スターバックス ジョイナステラス二俣川店", "station": "二俣川", "lat": 35.4625, "lon": 139.5325, "category": "カフェ", "wifi": True, "power": True, "access": "二俣川駅直結", "desc": "綺麗で新しいデスクスペースで快適に勉強。"},
-    {"name": "ドトールコーヒー 二俣川店", "station": "二俣川", "lat": 35.4620, "lon": 139.5320, "category": "カフェ", "wifi": True, "power": False, "access": "二俣川駅北口 徒歩1分", "desc": "朝のインプット学習などに重宝。"},
+    {"name": "ドトールコーヒー 二俣川店", "station": "二俣川", "lat": 35.4620, "lon": 139.5320, "category": "カフェ", "wifi": True, "power": False, "access": "二俣川駅北口 徒歩11分", "desc": "朝のインプット学習などに重宝。"},
     {"name": "タリーズコーヒー 新杉田店", "station": "新杉田", "lat": 35.3870, "lon": 139.6200, "category": "カフェ", "wifi": True, "power": True, "access": "新杉田駅直結", "desc": "乗り換え時にピッタリなコンセント完備店舗。"},
     {"name": "ドトールコーヒー 新杉田店", "station": "新杉田", "lat": 35.3865, "lon": 139.6195, "category": "カフェ", "wifi": True, "power": False, "access": "新杉田駅 徒歩1分", "desc": "移動の合間にサクッと今日のノルマを。"},
     {"name": "スターバックス 金沢文庫店", "station": "金沢文庫", "lat": 35.3425, "lon": 139.6220, "category": "カフェ", "wifi": True, "power": True, "access": "金沢文庫駅 徒歩2分", "desc": "地元学生やビジネスマンの自習利用が多い。"},
