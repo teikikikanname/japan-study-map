@@ -299,7 +299,8 @@ col_f1, col_f2 = st.columns([2, 2])
 
 with col_f1:
     if "鉄道路線" in search_mode:
-        chosen_line = st.selectbox("路線を選択してください", ALL_LINES, index=ALL_LINES.index("JR横宿賀線") if "JR横須賀線" in ALL_LINES else 0)
+        # 「JR横宿賀線」のタイポを「JR横須賀線」に修正
+        chosen_line = st.selectbox("路線を選択してください", ALL_LINES, index=ALL_LINES.index("JR横須賀線") if "JR横須賀線" in ALL_LINES else 0)
         target_stations = [st_name for st_name, info in STATION_DATA.items() if chosen_line in info["lines"]]
         display_title = f"■ {chosen_line} 沿線の学習スポット一覧"
         
@@ -312,7 +313,6 @@ with col_f1:
         target_stations = [chosen_station]
         display_title = f"■ {chosen_station} 駅周辺の学習スポット一覧"
         ref_station = chosen_station
-
 with col_f2:
     selected_cats = st.multiselect("施設種別", ["図書館", "カフェ"], default=["図書館", "カフェ"])
     c_col1, c_col2 = st.columns(2)
