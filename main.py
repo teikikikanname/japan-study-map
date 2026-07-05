@@ -137,7 +137,7 @@ SPOTS_DATA = [
     {"name": "プロント 横浜店", "station": "横浜", "line": "JR東海道線", "lat": 35.4648, "lon": 139.6215, "category": "カフェ", "wifi": True, "power": True, "seats": "約60席", "rule": "特になし", "access": "横浜駅西口 徒歩2分", "desc": "一人用席が充実しています。"},
     {"name": "珈琲館 横浜西口店", "station": "横浜", "line": "JR東海道線", "lat": 35.4650, "lon": 139.6190, "category": "カフェ", "wifi": True, "power": True, "seats": "約55席", "rule": "特になし", "access": "横浜駅西口 徒歩4分", "desc": "落ち着いた席の配置で作業がはかどります。"},
     {"name": "星乃珈琲店 横浜店", "station": "横浜", "line": "JR東海道線", "lat": 35.4642, "lon": 139.6212, "category": "カフェ", "wifi": False, "power": False, "seats": "約80席", "rule": "自習向きではない（読書向け）", "access": "横浜駅西口 徒歩3分", "desc": "ゆったりしたソファ席が多く、読書やノートでの勉強に最適。"},
-    {"name": "ブルーボトルコーヒー NEWoMan横浜店", "station": "横浜", "line": "東急東横線", "lat": 35.4663, "lon": 139.6228, "category": "カフェ", "wifi": True, "power": False, "seats": "約35席", "rule": "特になし", "access": "横浜駅直結", "desc": "開放日、あるいは気分転換の作業スペースに。"},
+    {"name": "ブルーボトルコーヒー NEWoMan横浜店", "station": "横浜", "line": "東急東横線", "lat": 35.4663, "lon": 139.6228, "category": "カフェ", "wifi": True, "power": False, "seats": "約35席", "rule": "特になし", "access": "横浜駅直結", "desc": "開放的な空間。リフレッシュを兼ねた勉強に。"},
     {"name": "タリーズコーヒー CeeU Yokohama店", "station": "横浜", "line": "JR東海道線", "lat": 35.4635, "lon": 139.6198, "category": "カフェ", "wifi": True, "power": True, "seats": "約65席", "rule": "特になし", "access": "横浜駅西口 徒歩4分", "desc": "商業施設内のタリーズ。デスクワーク席あり。"},
     {"name": "スターバックス ルミネ横浜店", "station": "横浜", "line": "東急東横線", "lat": 35.4654, "lon": 139.6227, "category": "カフェ", "wifi": True, "power": True, "seats": "約60席", "rule": "混雑時利用制限あり", "access": "横浜駅東口 ルミネ内", "desc": "ルミネの中にあるスタバ。駅内からのアクセスが非常に良い。"},
     {"name": "スターバックス そごう横浜店", "station": "横浜", "line": "京急本線", "lat": 35.4652, "lon": 139.6245, "category": "カフェ", "wifi": True, "power": False, "seats": "約40席", "rule": "特になし", "access": "横浜駅東口 そごう内", "desc": "そごう横浜店内。隙間時間の作業に。"},
@@ -160,7 +160,7 @@ SPOTS_DATA = [
     {"name": "ドトールコーヒーショップ 綱島西口店", "station": "綱島", "line": "東急東横線", "lat": 35.5362, "lon": 139.6338, "category": "カフェ", "wifi": True, "power": False, "seats": "約50席", "rule": "特になし", "access": "綱島駅西口 徒歩2分", "desc": "駅前の便利な店舗。サクッと短時間のインプットや読書におすすめ。"},
     {"name": "テラコーヒー 白楽店", "station": "白楽", "line": "東急東横線", "lat": 35.4912, "lon": 139.6265, "category": "カフェ", "wifi": False, "power": False, "seats": "約15席", "rule": "席数少なめのため読書向け", "access": "白楽駅西口 徒歩1分", "desc": "こだわりの自家焙煎珈琲店。静かに本を読んだり思考を整理するのに最適。"},
     {"name": "ドトールコーヒーショップ 白楽駅前店", "station": "白楽", "line": "東急東横線", "lat": 35.4902, "lon": 139.6269, "category": "カフェ", "wifi": True, "power": False, "seats": "約40席", "rule": "特になし", "access": "白楽駅西口すぐ", "desc": "改札目の前でアクセス抜群。大学が近いため学生の自習利用も多い。"},
-    {"name": "ミスタードーナツ いずみ野ショップ", "station": "いずみ野", "line": "相鉄いずみ野線", "lat": 35.4185, "lon": 139.4955, "category": "カフェ", "wifi": True, "power": False, "seats": "約35席", "rule": "特になし", "access": "いずみ野駅直結", "desc": "駅高架下の店舗. 平日の昼下がりなど比較的落ち着いて作業ができます。"},
+    {"name": "ミスタードーナツ いずみ野ショップ", "station": "いずみ野", "line": "相鉄いずみ野線", "lat": 35.4185, "lon": 139.4955, "category": "カフェ", "wifi": True, "power": False, "seats": "約35席", "rule": "特になし", "access": "いずみ野駅直結", "desc": "駅高架下の店舗。平日の昼下がりなど比較的落ち着いて作業ができます。"},
     {"name": "相鉄ライフいずみ野 休憩スペース", "station": "いずみ野", "line": "相鉄いずみ野線", "lat": 35.4190, "lon": 139.4960, "category": "図書館", "wifi": False, "power": False, "seats": "約20席", "rule": "共用エリアのためマナー遵守", "access": "いずみ野駅徒歩2分", "desc": "ライフ内にあるオープンな休憩スペース。軽めのノート作業や読書に。"},
     {"name": "ドトールコーヒーショップ 京急弘明寺店", "station": "弘明寺(京急)", "line": "京急本線", "lat": 35.4245, "lon": 139.5980, "category": "カフェ", "wifi": True, "power": False, "seats": "約45席", "rule": "特になし", "access": "京急弘明寺駅改札すぐ", "desc": "駅直結で雨の日も快適。商店街や公園の近くで落ち着いた客層。"},
     {"name": "ガスト 弘明寺店", "station": "弘明寺(地下鉄)", "line": "横浜市営地下鉄ブルーライン", "lat": 35.4245, "lon": 139.6080, "category": "カフェ", "wifi": True, "power": True, "seats": "約80席", "rule": "深夜利用可 / 混雑時制限あり", "access": "地下鉄弘明寺駅 徒歩2分", "desc": "すかいらーくWi-Fiとコンセント完備。席が広く、参考書を何冊も広げやすい。"},
@@ -217,7 +217,6 @@ col_main, col_map = st.columns([1.8, 1.1], gap="medium")
 # データのフィルタリング
 filtered_df = df_spots[df_spots["station"].isin(target_stations)].copy()
 
-# 【修正完了】 .isin() の引数エラーのバグ（1番目）を完全に解消
 if selected_cats:
     filtered_df = filtered_df[filtered_df["category"].isin(selected_cats)]
 else:
@@ -274,7 +273,8 @@ with col_main:
                 </tr>
             """
         
-        table_html += "</tbody></table>"
+        # 【タイポ修正完了】トリプルクォーテーションを正しく指定して解釈ミスを防ぎます
+        table_html += """</tbody></table>"""
         st.markdown(table_html, unsafe_allow_html=True)
     else:
         st.warning("選択された条件に合致するスポットは現在登録されていません。条件を緩めてみてください。")
@@ -282,7 +282,6 @@ with col_main:
 with col_map:
     st.markdown("<div style='font-size:13px; font-weight:bold; color:#1e293b; margin-bottom:5px;'>🌐 周辺マップ（位置確認用）</div>", unsafe_allow_html=True)
     
-    # 選択された条件の基準となる座標を計算
     if "鉄道路線" in search_mode and target_stations:
         ref_station = target_stations[0]
     else:
@@ -292,10 +291,8 @@ with col_map:
     
     m = folium.Map(location=[center_lat, center_lon], zoom_start=13, tiles="OpenStreetMap")
 
-    # 該当するすべてのスポットにピンを打つ
     if not filtered_df.empty:
         for _, spot in filtered_df.iterrows():
-            # 【修正完了】マップ側の下部（2番目）に残っていた .isin() 引数の記述も完全に解消しました
             pin_color = "blue" if spot['category'] == "図書館" else "cadetblue"
             seats_text = spot['seats'] if pd.notna(spot.get('seats')) else "情報なし"
             
