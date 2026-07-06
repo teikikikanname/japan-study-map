@@ -546,4 +546,10 @@ st.markdown("""
         駅勉ガイド 横浜広域版 | 当サイトは公開データを基にしたデータベースです。<br>
         最新の利用ルールや開館時間は各施設の公式サイトを直接ご確認ください。
     </div>
+
+    streamlit
+pandas
+folium
+streamlit-folium
+streamlit-js-eval
 """, unsafe_allow_html=True)
